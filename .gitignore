@@ -1,0 +1,41 @@
+# ========================
+# 🌐 FRONTEND
+# ========================
+
+# Dépendances
+frontend/node_modules/
+frontend/.pnp
+frontend.pnp.js
+
+# Tests
+frontend/coverage
+
+# Production
+frontend/build
+
+# Fichiers spécifiques
+frontend/.DS_Store
+frontend/.env.local
+frontend/.env.development.local
+frontend/.env.test.local
+frontend/.env.production.local
+
+# Logs et erreurs
+frontend/npm-debug.log*
+frontend/yarn-debug.log*
+frontend/yarn-error.log*
+
+
+# ========================
+# 🖥️ BACKEND
+# ========================
+
+# Dépendances
+backend/node_modules/
+
+# Fichiers sensibles
+backend/.env
+
+# Fichiers générés
+backend/uploads/
+backend/application.log
