@@ -1,0 +1,281 @@
+// controllers/albumController.js
+
+const Album = require('../models/Album');
+const Photo = require('../models/Photo');
+const config = require('../config/Config'); // Pour les logs et configurations globales
+const { PutObjectCommand, DeleteObjectCommand, GetObjectCommand } = require('@aws-sdk/client-s3');
+const { getSignedUrl } = require('@aws-sdk/s3-request-presigner');
+const path = require('path');
+const fs = require('fs');
+
+// Génère un lien pré-signé pour S3 
+const generateSignedUrl = async (key) => {
+    if (config.storageMode !== 'aws') return null;
+    const params = {
+        Bucket: process.env.AWS_BUCKET_NAME,
+        Key: key,
+    };
+    return await getSignedUrl(config.s3, new GetObjectCommand(params), { expiresIn: 3600 });
+};
+
+// Créer un nouvel album
+exports.createAlbum = async (req, res, next) => {
+    try {
+        const { name, description } = req.body;
+
+        let coverPhotoPath = null;
+
+        if (req.file) {
+            if (config.storageMode === 'aws') {
+                const fileKey = `albums/${Date.now()}-${req.file.originalname}`;
+                const params = {
+                    Bucket: process.env.AWS_BUCKET_NAME,
+                    Key: fileKey,
+                    Body: req.file.buffer,
+                    ContentType: req.file.mimetype,
+                };
+                await config.s3.send(new PutObjectCommand(params));
+                coverPhotoPath = `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${fileKey}`;
+            } else {
+                // Enregistrer localement
+                const uploadDir = path.join(__dirname, '../uploads/albums');
+                if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
+                const uploadPath = path.join(uploadDir, `${Date.now()}-${req.file.originalname}`);
+                fs.writeFileSync(uploadPath, req.file.buffer);
+                coverPhotoPath = `/uploads/albums/${path.basename(uploadPath)}`;
+            }
+        }
+
+        const newAlbum = new Album({
+            name,
+            description,
+            coverPhoto: coverPhotoPath,
+        });
+
+        await newAlbum.save();
+
+        config.log('info', `Album créé : ${newAlbum.name}`);
+        res.status(201).json({ message: 'Album créé avec succès.', album: newAlbum });
+    } catch (error) {
+        next(error);
+    }
+};
+
+// Récupérer tous les albums
+exports.getAllAlbums = async (req, res, next) => {
+    try {
+      const albums = await Album.find().populate('photos');
+  
+      // Gérer la coverPhoto selon le mode de stockage
+      if (config.storageMode === 'aws') {
+        // Générer une URL signée pour chaque coverPhoto (si existante)
+        for (const album of albums) {
+          if (album.coverPhoto) {
+            // Exemple : album.coverPhoto = 
+            //   "https://bucket.s3.region.amazonaws.com/albums/12345.jpg"
+            // On en extrait la partie après ".com/"
+            const splitted = album.coverPhoto.split('.com/');
+            if (splitted.length > 1) {
+              const key = splitted[1]; // ex: "albums/12345.jpg"
+              const signedUrl = await generateSignedUrl(key);
+              album.coverPhoto = signedUrl; 
+            }
+          }
+        }
+      } else {
+        // Stockage local : 
+        // si coverPhoto commence par "/uploads/albums/...", on la préfixe de http://localhost:3000
+        for (const album of albums) {
+          if (album.coverPhoto && album.coverPhoto.startsWith('/uploads/')) {
+            album.coverPhoto = `http://localhost:3000${album.coverPhoto}`;
+          }
+        }
+      }
+  
+      res.status(200).json({ albums });
+      config.log('info', 'Tous les albums ont été récupérés.');
+    } catch (error) {
+      next(error);
+    }
+  };
+
+// Récupérer un album par ID
+exports.getAlbumById = async (req, res, next) => {
+    try {
+        const album = await Album.findById(req.params.id).populate('photos');
+        if (!album) {
+            config.log('warn', `Album non trouvé : ${req.params.id}`);
+            return res.status(404).json({ message: 'Album non trouvé.' });
+        }
+
+        // Si stockage en AWS, générer des URLs signées pour les photos
+        if (config.storageMode === 'aws') {
+            // Code existant : générer la signedUrl
+            const photosWithUrls = await Promise.all(
+                album.photos.map(async (photo) => {
+                    const key = photo.imagePath.split('.com/')[1];
+                    const signedUrl = await generateSignedUrl(key);
+                    return { ...photo.toObject(), signedUrl };
+                })
+            );
+            return res.status(200).json({ album: { ...album.toObject(), photos: photosWithUrls } });
+        } else {
+            // Pour le local, on crée la clé "signedUrl" égale à imagePath
+            const photosWithUrls = album.photos.map(photo => {
+                return {
+                    ...photo.toObject(),
+                    signedUrl: photo.imagePath
+                };
+            });
+            return res.status(200).json({ album: { ...album.toObject(), photos: photosWithUrls } });
+        }
+    } catch (error) {
+        next(error);
+    }
+};
+
+// Mettre à jour un album
+exports.updateAlbum = async (req, res, next) => {
+    try {
+        const { name, description } = req.body;
+        const album = await Album.findById(req.params.id);
+
+        if (!album) {
+            config.log('warn', `Album non trouvé pour mise à jour : ${req.params.id}`);
+            return res.status(404).json({ message: 'Album non trouvé.' });
+        }
+
+        if (name) album.name = name;
+        if (description) album.description = description;
+
+        if (req.file) {
+            // Supprimer l'ancienne photo de couverture si elle existe
+            if (album.coverPhoto) {
+                if (config.storageMode === 'aws') {
+                    const key = album.coverPhoto.split('.com/')[1];
+                    await config.s3.send(new DeleteObjectCommand({ Bucket: process.env.AWS_BUCKET_NAME, Key: key }));
+                } else {
+                    const filePath = path.join(__dirname, '../', album.coverPhoto);
+                    if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
+                }
+            }
+
+            // Télécharger la nouvelle photo de couverture
+            if (config.storageMode === 'aws') {
+                const fileKey = `albums/${Date.now()}-${req.file.originalname}`;
+                const params = {
+                    Bucket: process.env.AWS_BUCKET_NAME,
+                    Key: fileKey,
+                    Body: req.file.buffer,
+                    ContentType: req.file.mimetype,
+                };
+                await config.s3.send(new PutObjectCommand(params));
+                album.coverPhoto = `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${fileKey}`;
+            } else {
+                // Enregistrer localement
+                const uploadDir = path.join(__dirname, '../uploads/albums');
+                if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
+                const uploadPath = path.join(uploadDir, `${Date.now()}-${req.file.originalname}`);
+                fs.writeFileSync(uploadPath, req.file.buffer);
+                album.coverPhoto = `/uploads/albums/${path.basename(uploadPath)}`;
+            }
+        }
+
+        await album.save();
+
+        config.log('info', `Album mis à jour : ${album.name}`);
+        res.status(200).json({ message: 'Album mis à jour avec succès.', album });
+    } catch (error) {
+        next(error);
+    }
+};
+
+// Supprimer un album
+exports.deleteAlbum = async (req, res, next) => {
+    try {
+        const album = await Album.findById(req.params.id).populate('photos');
+
+        if (!album) {
+            config.log('warn', `Album non trouvé pour suppression : ${req.params.id}`);
+            return res.status(404).json({ message: 'Album non trouvé.' });
+        }
+
+        if (album.photos.length > 0) {
+            config.log('warn', `Tentative de suppression d'un album contenant des photos : ${album.name}`);
+            return res.status(400).json({ message: 'Impossible de supprimer un album contenant des photos.' });
+        }
+
+        // Supprimer la photo de couverture si elle existe
+        if (album.coverPhoto) {
+            if (config.storageMode === 'aws') {
+                const key = album.coverPhoto.split('.com/')[1];
+                await config.s3.send(new DeleteObjectCommand({ Bucket: process.env.AWS_BUCKET_NAME, Key: key }));
+            } else {
+                const filePath = path.join(__dirname, '../', album.coverPhoto);
+                if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
+            }
+        }
+
+        await album.deleteOne();
+        config.log('info', `Album supprimé : ${album.name}`);
+        res.status(200).json({ message: 'Album supprimé avec succès.' });
+    } catch (error) {
+        next(error);
+    }
+};
+
+// Ajouter une photo à un album
+exports.addPhotoToAlbum = async (req, res, next) => {
+    try {
+        const { albumId, photoId } = req.body;
+
+        const album = await Album.findById(albumId);
+        const photo = await Photo.findById(photoId);
+
+        if (!album || !photo) {
+            config.log('warn', `Album ou Photo non trouvé : Album ID ${albumId}, Photo ID ${photoId}`);
+            return res.status(404).json({ message: 'Album ou Photo non trouvé.' });
+        }
+
+        if (!album.photos.includes(photoId)) {
+            album.photos.push(photoId);
+            await album.save();
+            config.log('info', `Photo ajoutée à l'album ${album.name} : Photo ID ${photoId}`);
+        }
+
+        res.status(200).json({ message: 'Photo ajoutée à l\'album avec succès.', album });
+    } catch (error) {
+        next(error);
+    }
+};
+
+// Déplacer une photo d'un album à un autre
+exports.movePhotoToAlbum = async (req, res, next) => {
+    try {
+        const { fromAlbumId, toAlbumId, photoId } = req.body;
+
+        const fromAlbum = await Album.findById(fromAlbumId);
+        const toAlbum = await Album.findById(toAlbumId);
+        const photo = await Photo.findById(photoId);
+
+        if (!fromAlbum || !toAlbum || !photo) {
+            config.log('warn', `Album ou Photo non trouvé lors du déplacement : Photo ID ${photoId}`);
+            return res.status(404).json({ message: 'Album ou Photo non trouvé.' });
+        }
+
+        // Retirer la photo de l'ancien album
+        fromAlbum.photos = fromAlbum.photos.filter(id => id.toString() !== photoId);
+        await fromAlbum.save();
+
+        // Ajouter la photo au nouvel album
+        if (!toAlbum.photos.includes(photoId)) {
+            toAlbum.photos.push(photoId);
+            await toAlbum.save();
+            config.log('info', `Photo déplacée de l'album ${fromAlbum.name} à l'album ${toAlbum.name} : Photo ID ${photoId}`);
+        }
+
+        res.status(200).json({ message: 'Photo déplacée avec succès.', fromAlbum, toAlbum });
+    } catch (error) {
+        next(error);
+    }
+};

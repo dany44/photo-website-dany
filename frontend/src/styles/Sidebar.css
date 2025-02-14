@@ -1,0 +1,95 @@
+/* Conteneur principal de la Sidebar */
+.sidebar {
+    background-color: #1e3a8a; /* Bleu foncé */
+    color: white;
+    height: 100vh;
+    width: 250px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    transition: width 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    z-index: 1000;
+}
+
+/* Mode rétracté */
+.sidebar.collapsed {
+    width: 60px;
+}
+
+/* Bouton pour rétracter/étendre */
+.sidebar-toggle {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 18px;
+    cursor: pointer;
+    padding: 10px;
+    align-self: flex-end;
+    transition: transform 0.3s ease;
+}
+
+.sidebar-toggle:hover {
+    transform: scale(1.1);
+}
+
+/* Logo ou titre */
+.sidebar-header {
+    text-align: center;
+    padding: 20px 10px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.sidebar-logo {
+    font-size: 20px;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+/* Liste de navigation */
+.sidebar-menu {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    flex-grow: 1;
+}
+
+.sidebar-menu li {
+    display: flex;
+    align-items: center;
+    padding: 15px 20px;
+}
+
+.sidebar-link {
+    color: white;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.sidebar-link:hover {
+    background-color: #2563eb; /* Bleu plus clair */
+}
+
+.sidebar-link-active {
+    background-color: #2563eb;
+    font-weight: bold;
+}
+
+/* Icônes et texte */
+.sidebar-icon {
+    margin-right: 10px;
+    font-size: 18px;
+}
+
+/* Mode rétracté */
+.sidebar.collapsed .sidebar-icon {
+    margin-right: 0;
+}
+
+.sidebar.collapsed .sidebar-menu li span:not(.sidebar-icon) {
+    display: none;
+}
