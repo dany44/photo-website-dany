@@ -46,8 +46,8 @@ const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
       {/* Ton nom/prénom dans le titre */}
       <div className="mb-8 px-4 flex flex-col items-center">
         {!isCollapsed && (
-          <div className="text-center text-4xl font-signature italic text-gray-100 tracking-wider">
-            Dany Khadhar
+          <div className="text-center text-5xl font-signature italic text-gray-100 tracking-wide">
+          Dany Khadhar
           </div>
         )}
       </div>
