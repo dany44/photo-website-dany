@@ -1,7 +1,7 @@
 // src/pages/Home/HomePage.jsx
 import React, { useState, useEffect } from 'react';
 import PhotoGallery from '../../components/gallery/PhotoGallery';
-import { getAllAlbums } from '../../api/albums'; // ou import { useContext } from 'react' + AlbumContext
+import { getAllAlbums } from '../../api/albums'; 
 import { NavLink } from 'react-router-dom';
 
 function HomePage() {
@@ -9,7 +9,7 @@ function HomePage() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
 
-  // 1. Charger la liste des albums
+  //Charger la liste des albums
   useEffect(() => {
     fetchAlbums();
   }, []);
@@ -36,7 +36,6 @@ function HomePage() {
 
   return (
     <div className="bg-gray-900 text-white min-h-screen p-4">
-      <h1 className="text-3xl font-bold mb-6">Accueil</h1>
       
       {/* Section Albums */}
       <div className="mb-8">
