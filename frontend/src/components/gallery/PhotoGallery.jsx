@@ -47,7 +47,7 @@ function PhotoGallery({ albumId, isAdmin = false }) {
         setCurrentPage(1); 
       } else {
         // Récupération de TOUTES les photos (avec pagination)
-        const data = await getPhotos(page, 25); // 25 photos/page
+        const data = await getPhotos(page, 10); // 10 photos/page
         setPhotos(data.photos);
         setTotalPages(data.totalPages);
       }
