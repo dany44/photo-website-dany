@@ -7,17 +7,19 @@ const axiosInstance = axios.create({
 });
 
 // Ajouter un intercepteur de réponse
+// Ajouter un intercepteur de réponse
 axiosInstance.interceptors.response.use(
     response => response,
     error => {
         if (error.response && error.response.status === 401) {
             const isLoginRequest = error.config.url === '/photos/login';
-            if (!isLoginRequest && window.location.pathname !== '/login') {
+            const isHomePage = window.location.pathname === '/';
+            
+            if (!isLoginRequest && !isHomePage && window.location.pathname !== '/login') {
                 window.location.href = '/login';
             }
         }
         return Promise.reject(error);
     }
 );
-
 export default axiosInstance;

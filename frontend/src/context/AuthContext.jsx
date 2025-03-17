@@ -22,7 +22,7 @@ export const AuthProvider = ({ children }) => {
         };
 
         // Ne pas vérifier l'authentification si on est déjà sur la page de login
-        if (window.location.pathname === '/admin') {
+        if (window.location.pathname !== '/login') {
             verifyAuth();
         } else {
             setLoading(false);
