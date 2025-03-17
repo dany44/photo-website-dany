@@ -1,16 +1,17 @@
-// routes/photoRoutes.js
-
 const express = require('express');
-const { authenticate, authorize } = require('../middlewares/authMiddleware'); // Importer authorize
+const rateLimit = require('../middlewares/apiLimiter'); // Import du middleware rate limit
+const { authenticate, authorize } = require('../middlewares/authMiddleware');
 const { upload, handleUploadError } = require('../middlewares/uploadMiddleware');
 const photoController = require('../controllers/photoController');
 const validatePhoto = require('../middlewares/validatePhoto');
 
 const router = express.Router();
 
-// Routes publiques
-router.post('/login', photoController.login);
-router.get('/', photoController.getPhotos);
+// Appliquer le rate limit sur login pour éviter brute force
+router.post('/login', rateLimit, photoController.login);
+
+// Appliquer le rate limit sur la récupération des photos pour éviter un abus
+router.get('/', rateLimit, photoController.getPhotos);
 
 // Routes nécessitant authentification
 router.post('/logout', authenticate, photoController.logout); 
