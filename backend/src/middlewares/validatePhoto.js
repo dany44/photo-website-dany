@@ -3,7 +3,7 @@ const Joi = require('joi');
 const photoValidationSchema = Joi.object({
     title: Joi.string().min(3).max(50).required(),
     description: Joi.string().max(200).optional(),
-    albumId: Joi.string().required(), // si obligatoire
+    albumId: Joi.string().required(), 
 });
 
 const validatePhoto = (req, res, next) => {

@@ -5,6 +5,7 @@ const Album = require('../models/Album');
 const config = require('../config/Config'); // Logs et configurations globales
 const path = require('path');
 const fs = require('fs');
+const bcrypt = require('bcrypt');
 
 // Génère un lien pré-signé pour S3
 const generateSignedUrl = async (key) => {
@@ -16,33 +17,42 @@ const generateSignedUrl = async (key) => {
 };
 
 // Route : Connexion
-exports.login = (req, res, next) => {
+
+exports.login = async (req, res, next) => {
     try {
         const { username, password } = req.body;
 
-        // Identifiants prédéfinis (à remplacer par une vraie DB plus tard)
-        const adminUser = { username: 'admin', password: 'password123', role: 'admin' };
+        const adminUser = {
+            username: 'admin',
+            hashedPassword: process.env.ADMIN_HASHED_PASSWORD,
+            role: 'admin',
+        };
 
-        if (username === adminUser.username && password === adminUser.password) {
-            const token = config.jwt.sign({ username, role: adminUser.role }, process.env.JWT_SECRET, { expiresIn: '1h' });
-            config.log('info', `Utilisateur connecté : ${username}`);
-            
-            // Configuration des options du cookie
-            const cookieOptions = {
-                httpOnly: true, // Empêche l'accès via JavaScript
-                secure: process.env.NODE_ENV === 'production', // Utilise HTTPS en production
-                sameSite: 'strict', // Prévient les attaques CSRF
-                maxAge: 3600000, // 1 heure en millisecondes
-            };
-            
-            // Envoyer le token dans un cookie
-            res.cookie('token', token, cookieOptions);
-            
-            res.json({ message: 'Connexion réussie' }); // Optionnellement, tu peux envoyer un message de succès
-        } else {
-            config.log('warn', `Tentative de connexion échouée : ${username}`);
-            res.status(401).json({ message: 'Identifiants incorrects.' });
+        if (username !== adminUser.username) {
+            config.log('warn', `Tentative de connexion échouée (identifiant incorrect) : ${username}`);
+            return res.status(401).json({ message: 'Identifiants incorrects.' });
         }
+
+        // Vérifier le mot de passe avec bcrypt
+        const isMatch = await bcrypt.compare(password, adminUser.hashedPassword);
+        if (!isMatch) {
+            config.log('warn', `Tentative de connexion échouée (mot de passe incorrect) : ${username}`);
+            return res.status(401).json({ message: 'Identifiants incorrects.' }); 
+        }
+
+        // Si tout est OK, on génère le token
+        const token = config.jwt.sign({ username, role: adminUser.role }, process.env.JWT_SECRET, { expiresIn: '1h' });
+
+        config.log('info', `Utilisateur connecté : ${username}`);
+        res.cookie('token', token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'strict',
+            maxAge: 3600000, // 1h
+        });
+
+        return res.json({ message: 'Connexion réussie' });
+
     } catch (error) {
         next(error);
     }
