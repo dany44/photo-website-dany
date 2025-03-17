@@ -245,7 +245,7 @@ function PhotoGallery({ albumId, isAdmin = false }) {
     text-white text-center  /* Centrer le texte sur mobile */
     sm:top-[85%] sm:left-1/2 sm:right-auto sm:translate-x-1/2  /* Centré sous l'image sur petits écrans */
     sm:w-[80vw] sm:text-center  /* Largeur et alignement pour petits écrans */
-    md:top-1/2 md:left-auto md:right-10 md:translate-x-0  /* Déplacé à droite sur écrans moyens */
+    md:top-1/2 md:left-auto md:right-40 md:translate-x-0  /* Déplacé à droite sur écrans moyens */
     md:w-48 md:text-left  /* Largeur fixe et alignement à gauche sur écrans moyens */
   "
 >
