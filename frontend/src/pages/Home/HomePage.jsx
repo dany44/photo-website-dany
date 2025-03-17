@@ -1,30 +1,11 @@
 // src/pages/Home/HomePage.jsx
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import PhotoGallery from '../../components/gallery/PhotoGallery';
-import { getAllAlbums } from '../../api/albums'; 
 import { NavLink } from 'react-router-dom';
+import { AlbumContext } from '../../context/AlbumContext';
 
 function HomePage() {
-  const [albums, setAlbums] = useState([]);
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(true);
-
-  //Charger la liste des albums
-  useEffect(() => {
-    fetchAlbums();
-  }, []);
-
-  const fetchAlbums = async () => {
-    try {
-      const data = await getAllAlbums(); // { albums: [...] }
-      setAlbums(data.albums);
-    } catch (err) {
-      console.error(err);
-      setError('Erreur lors de la récupération des albums.');
-    } finally {
-      setLoading(false);
-    }
-  };
+  const { albums, loading, error } = useContext(AlbumContext);
 
   if (loading) {
     return <div className="text-center text-white mt-4">Chargement...</div>;

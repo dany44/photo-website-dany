@@ -12,12 +12,12 @@ router.get('/', rateLimit, albumController.getAllAlbums);
 router.get('/:id', rateLimit, albumController.getAlbumById);
 
 // Routes protégées (admin uniquement)
-router.post('/', authenticate, authorize('admin'), upload.single('coverPhoto'), validateAlbum, handleUploadError, albumController.createAlbum);
-router.put('/:id', authenticate, authorize('admin'), upload.single('coverPhoto'), validateAlbum, handleUploadError, albumController.updateAlbum);
-router.delete('/:id', authenticate, authorize('admin'), albumController.deleteAlbum);
+router.post('/', authenticate('post / (albums)'), authorize('admin'), upload.single('coverPhoto'), validateAlbum, handleUploadError, albumController.createAlbum);
+router.put('/:id', authenticate('put /:id (albums)'), authorize('admin'), upload.single('coverPhoto'), validateAlbum, handleUploadError, albumController.updateAlbum);
+router.delete('/:id', authenticate('delete /:id (albums)'), authorize('admin'), albumController.deleteAlbum);
 
 // Routes supplémentaires pour associer/déplacer des photos
-router.post('/add-photo', authenticate, authorize('admin'), albumController.addPhotoToAlbum);
-router.post('/move-photo', authenticate, authorize('admin'), albumController.movePhotoToAlbum);
+router.post('/add-photo', authenticate('post /add-photo (albums)'), authorize('admin'), albumController.addPhotoToAlbum);
+router.post('/move-photo', authenticate('post /move-photo (albums)'), authorize('admin'), albumController.movePhotoToAlbum);
 
 module.exports = router;
