@@ -7,7 +7,7 @@ import App from './App';
 import './index.css'; 
 
 ReactDOM.createRoot(document.getElementById('root')).render(
-  <React.StrictMode>
+//  <React.StrictMode>
     <AuthProvider>
       <AlbumProvider>
         <BrowserRouter>
@@ -15,5 +15,5 @@ ReactDOM.createRoot(document.getElementById('root')).render(
         </BrowserRouter>
       </AlbumProvider>
     </AuthProvider>
-  </React.StrictMode>
+ // </React.StrictMode>
 );

@@ -105,7 +105,7 @@ exports.getAlbumById = async (req, res, next) => {
         const album = await Album.findById(req.params.id).populate('photos');
         if (!album) {
             config.log('warn', `Album non trouvé : ${req.params.id}`);
-            return res.status(404).json({ message: 'Album non trouvé.' });
+            res.status(404).json({ message: 'Album non trouvé.' });
         }
 
         // Si stockage en AWS, générer des URLs signées pour les photos
@@ -118,7 +118,7 @@ exports.getAlbumById = async (req, res, next) => {
                     return { ...photo.toObject(), signedUrl };
                 })
             );
-            return res.status(200).json({ album: { ...album.toObject(), photos: photosWithUrls } });
+            res.status(200).json({ album: { ...album.toObject(), photos: photosWithUrls } });
         } else {
             // Pour le local, on crée la clé "signedUrl" égale à imagePath
             const photosWithUrls = album.photos.map(photo => {
@@ -127,7 +127,8 @@ exports.getAlbumById = async (req, res, next) => {
                     signedUrl: photo.imagePath
                 };
             });
-            return res.status(200).json({ album: { ...album.toObject(), photos: photosWithUrls } });
+            res.status(200).json({ album: { ...album.toObject(), photos: photosWithUrls } });
+            config.log('info', `Toutes les photos de l'album ${req.params.id} ont été récupérés.`);
         }
     } catch (error) {
         next(error);
