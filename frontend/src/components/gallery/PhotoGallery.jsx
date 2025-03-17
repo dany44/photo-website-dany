@@ -43,8 +43,8 @@ function PhotoGallery({ albumId, isAdmin = false }) {
         }
         // Pas de pagination "globale" ici : on récupère tout l'album
         setPhotos(album.photos || []);
-        setTotalPages(1); 
-        setCurrentPage(1); 
+        setTotalPages(1);
+        setCurrentPage(1);
       } else {
         // Récupération de TOUTES les photos (avec pagination)
         const data = await getPhotos(page, 10); // 10 photos/page
@@ -158,17 +158,25 @@ function PhotoGallery({ albumId, isAdmin = false }) {
           <button
             onClick={() => handlePageChange(currentPage - 1)}
             disabled={currentPage <= 1}
-            className="px-3 py-1 border border-gray-600 rounded disabled:opacity-50"
+            className="
+           px-2 py-1 border border-gray-600 rounded disabled:opacity-50
+           sm:px-4 sm:py-2
+           md:px-5 md:py-2.5
+         "
           >
             Précédent
           </button>
-          <span className="text-sm">
+          <span className="text-sm sm:text-base md:text-lg">
             Page {currentPage} / {totalPages}
           </span>
           <button
             onClick={() => handlePageChange(currentPage + 1)}
             disabled={currentPage >= totalPages}
-            className="px-3 py-1 border border-gray-600 rounded disabled:opacity-50"
+            className="
+           px-2 py-1 border border-gray-600 rounded disabled:opacity-50
+           sm:px-4 sm:py-2
+           md:px-5 md:py-2.5
+         "
           >
             Suivant
           </button>
@@ -185,13 +193,13 @@ function PhotoGallery({ albumId, isAdmin = false }) {
           <button
             onClick={handleCloseModal}
             className="
-              text-white text-2xl
-              absolute top-4 right-4
-              bg-gray-700 hover:bg-gray-600
-              rounded-full w-10 h-10
-              flex items-center justify-center
-              z-10
-            "
+        text-white text-2xl
+        absolute top-4 right-4
+        bg-gray-700 hover:bg-gray-600
+        rounded-full w-10 h-10
+        flex items-center justify-center
+        z-10
+      "
           >
             ✕
           </button>
@@ -203,11 +211,15 @@ function PhotoGallery({ albumId, isAdmin = false }) {
             {/* Photo principale */}
             <div
               className="
-                absolute top-1/2 left-1/2
-                -translate-x-1/2 -translate-y-1/2
-                max-w-[23vw] max-h-[23vh]
-                flex items-center justify-center
-              "
+    absolute top-[43%] left-1/2  /* Décalage vers le haut par défaut */
+    -translate-x-1/2 -translate-y-1/2
+    w-[90vw] h-[50vh]  /* Taille par défaut pour mobile */
+    sm:w-[80vw] sm:h-[60vh]  /* Taille pour petits écrans */
+    md:w-[70vw] md:h-[70vh]  /* Taille pour écrans moyens */
+    lg:w-[55vw] lg:h-[75vh]  /* Taille légèrement réduite pour grands écrans */
+    xl:w-[45vw] xl:h-[85vh]  /* Taille légèrement réduite pour très grands écrans */
+    flex items-center justify-center
+  "
             >
               <img
                 crossOrigin="anonymous"
@@ -218,53 +230,62 @@ function PhotoGallery({ albumId, isAdmin = false }) {
                 }
                 alt={selectedPhoto.title}
                 className="
-                  object-contain
-                  max-w-full max-h-full
-                "
+      object-contain
+      w-full h-full  /* L'image occupe toute la place disponible */
+    "
               />
             </div>
 
-            {/* Titre + description à droite */}
+            {/* Titre + description */}
             <div
-              className="
-                absolute top-1/2 right-10
-                -translate-y-1/2
-                text-white w-48
-              "
-            >
-              <h3 className="text-lg font-bold mb-1">{selectedPhoto.title}</h3>
-              <p className="text-sm text-gray-300">
-                {selectedPhoto.description}
-              </p>
-            </div>
+  className="
+    absolute top-[75%] left-1/2  /* Position sous l'image sur mobile */
+    -translate-x-1/2 -translate-y-1/2
+    w-[80vw]  /* Largeur adaptée pour mobile */
+    text-white text-center  /* Centrer le texte sur mobile */
+    sm:top-[85%] sm:left-1/2 sm:right-auto sm:translate-x-1/2  /* Centré sous l'image sur petits écrans */
+    sm:w-[80vw] sm:text-center  /* Largeur et alignement pour petits écrans */
+    md:top-1/2 md:left-auto md:right-10 md:translate-x-0  /* Déplacé à droite sur écrans moyens */
+    md:w-48 md:text-left  /* Largeur fixe et alignement à gauche sur écrans moyens */
+  "
+>
+  <h3 className="text-lg font-bold mb-1">{selectedPhoto.title}</h3>
+  <p className="text-sm text-gray-300">
+    {selectedPhoto.description}
+  </p>
+</div>
 
             {/* Ruban en bas */}
             <div
               ref={scrollContainerRef}
               className="
-                absolute bottom-0 left-0 right-0
-                h-24 bg-black bg-opacity-90
-                flex items-center
-                px-2
-                overflow-x-auto
-                whitespace-nowrap
-              "
+          absolute bottom-0 left-0 right-0
+          h-16  /* Hauteur réduite pour mobile */
+          sm:h-20  /* Hauteur moyenne pour petits écrans */
+          md:h-24  /* Hauteur d'origine pour écrans moyens et plus grands */
+          bg-black bg-opacity-90
+          flex items-center
+          px-2
+          overflow-x-auto
+          whitespace-nowrap
+        "
             >
               {photos.map((thumb, idx) => (
                 <div
                   key={thumb._id}
                   ref={(el) => (thumbnailRefs.current[idx] = el)}
                   className={`
-                    cursor-pointer mr-2
-                    w-20 h-full
-                    flex-shrink-0 border-2
-                    ${
-                      idx === selectedIndex
-                        ? 'border-white'
-                        : 'border-transparent'
+              cursor-pointer mr-2
+              w-16 h-[90%]  /* Taille réduite pour mobile */
+              sm:w-20  /* Taille moyenne pour petits écrans */
+              md:w-24  /* Taille d'origine pour écrans moyens et plus grands */
+              flex-shrink-0 border-2
+              ${idx === selectedIndex
+                      ? 'border-white'
+                      : 'border-transparent'
                     }
-                    hover:border-white
-                  `}
+              hover:border-white
+            `}
                   onClick={(e) => {
                     e.stopPropagation();
                     handleThumbnailClick(idx);
