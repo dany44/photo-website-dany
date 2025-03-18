@@ -9,7 +9,8 @@ module.exports = {
       fontFamily: {
         sans: ['Poppins', 'sans-serif'],
         signature: ["Great Vibes", "cursive"],
-
+        playfair: ['"Playfair Display"', 'serif'],
+        openSans: ['"Open Sans"', 'sans-serif'],
       },
     },
   },
