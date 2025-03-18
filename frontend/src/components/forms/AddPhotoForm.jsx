@@ -12,11 +12,11 @@ function AddPhotoForm() {
   const [preview, setPreview] = useState(null);
   const [selectedAlbum, setSelectedAlbum] = useState('');
   const [message, setMessage] = useState('');
-  const [messageType, setMessageType] = useState('');
+  const [messageType, setMessageType] = useState(''); // "success" ou "error"
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    // Avec React Query, le hook useAlbums s'occupe du fetch, donc pas besoin de fetchAlbums ici
+    // Avec React Query, useAlbums s'occupe du fetch, pas besoin de fetchAlbums ici.
   }, []);
 
   const handleImageChange = (e) => {
@@ -32,12 +32,14 @@ function AddPhotoForm() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!image || !selectedAlbum) {
-      setMessage(!image ? 'Veuillez sélectionner une image.' : 'Veuillez sélectionner un album.');
+    // Validation côté client : vérifier que tous les champs sont remplis
+    if (!title || !description || !image || !selectedAlbum) {
+      setMessage('Veuillez remplir tous les champs.');
       setMessageType('error');
       return;
     }
-
+    // Si tout est rempli, on efface le message et on prépare l'appel API
+    setMessage('');
     const formData = new FormData();
     formData.append('title', title);
     formData.append('description', description);
@@ -50,14 +52,20 @@ function AddPhotoForm() {
       setLoading(false);
       setMessage('Photo ajoutée avec succès !');
       setMessageType('success');
+      // Réinitialisation des champs après soumission réussie
       setTitle('');
       setDescription('');
       setImage(null);
       setPreview(null);
       setSelectedAlbum('');
-    } catch {
+    } catch (err) {
       setLoading(false);
-      setMessage('Erreur lors de l’ajout de la photo.');
+      // Extraction du message d'erreur envoyé par le serveur (si présent)
+      const serverMessage =
+        err.response && err.response.data && err.response.data.message
+          ? err.response.data.message
+          : 'Erreur lors de l’ajout de la photo.';
+      setMessage(serverMessage);
       setMessageType('error');
     }
   };
@@ -76,6 +84,7 @@ function AddPhotoForm() {
       )}
 
       <form onSubmit={handleSubmit} className="space-y-6">
+        {/* Champ Titre */}
         <div>
           <label htmlFor="title" className="label-field">Titre</label>
           <input
@@ -88,6 +97,8 @@ function AddPhotoForm() {
             required
           />
         </div>
+
+        {/* Champ Description */}
         <div>
           <label htmlFor="description" className="label-field">Description</label>
           <textarea
@@ -100,6 +111,8 @@ function AddPhotoForm() {
             required
           />
         </div>
+
+        {/* Sélection d'album */}
         <div>
           <label htmlFor="albumSelect" className="label-field">Album</label>
           <select
@@ -117,6 +130,8 @@ function AddPhotoForm() {
             ))}
           </select>
         </div>
+
+        {/* Upload de l'image */}
         <div>
           <label htmlFor="image" className="label-field mb-2">Image</label>
           <div className="flex items-center space-x-4">
@@ -133,6 +148,8 @@ function AddPhotoForm() {
             {image && <span className="text-sm text-gray-400">{image.name}</span>}
           </div>
         </div>
+
+        {/* Aperçu de l'image */}
         {preview && (
           <img
             src={preview}
@@ -140,6 +157,7 @@ function AddPhotoForm() {
             className="w-full h-auto rounded-lg border border-gray-600 shadow-sm"
           />
         )}
+
         <button type="submit" className="button-primary w-full sm:w-auto" disabled={loading}>
           {loading ? 'Téléchargement...' : 'Ajouter'}
         </button>
