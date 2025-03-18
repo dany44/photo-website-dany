@@ -1,115 +1,93 @@
 // src/components/gallery/PhotoGallery.jsx
-
-import React, { useState, useEffect, useContext, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import { AuthContext } from '../../context/AuthContext';
-import { getPhotos, deletePhoto } from '../../api/photos';
-import { getAlbumById } from '../../api/albums';
+import { usePhotos } from '../../hooks/usePhotos';
+import { useAlbumPhotos } from '../../hooks/useAlbumPhotos';
 
 function PhotoGallery({ albumId, isAdmin = false }) {
-  const { isAuthenticated } = useContext(AuthContext);
+  const { isAuthenticated } = React.useContext(AuthContext);
 
-  const [photos, setPhotos] = useState([]);
-  const [error, setError] = useState('');
+  // Pour la vue globale, on utilise une state pour la page
+  const [page, setPage] = useState(1);
 
-  // Pagination (pour la vue globale)
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
+  // Appel inconditionnel des deux hooks.
+  // useAlbumPhotos : récupère les données de l'album si albumId est défini (enabled gère l'exécution).
+  const albumQuery = useAlbumPhotos(albumId);
+  // usePhotos : n'est activé que si aucun albumId n'est passé.
+  const photosQuery = usePhotos(page, 10, { enabled: !albumId });
 
-  // Index de la photo sélectionnée (pour le modal)
+  // On détermine la vue à utiliser : album spécifique ou globale.
+  const isAlbumView = Boolean(albumId);
+
+  // Pour la vue album, on extrait les photos depuis albumQuery, sinon on prend les données de photosQuery.
+  const {
+    photos,
+    currentPage,
+    totalPages,
+    isLoading,
+    error,
+    deletePhoto,
+  } = isAlbumView
+    ? {
+        photos: albumQuery.data?.album?.photos || [],
+        currentPage: 1,
+        totalPages: 1,
+        isLoading: albumQuery.isLoading,
+        error: albumQuery.error,
+        // Pour une vue d'album, la suppression peut être désactivée ou gérée différemment.
+        deletePhoto: () => {},
+      }
+    : {
+        photos: photosQuery.photos,
+        currentPage: photosQuery.currentPage,
+        totalPages: photosQuery.totalPages,
+        isLoading: photosQuery.isLoading,
+        error: photosQuery.error,
+        deletePhoto: photosQuery.deletePhoto,
+      };
+
+  // State et refs pour le modal et les miniatures.
   const [selectedIndex, setSelectedIndex] = useState(null);
-  const selectedPhoto = selectedIndex !== null ? photos[selectedIndex] : null;
-
-  // Refs pour le modal "ruban"
   const scrollContainerRef = useRef(null);
   const thumbnailRefs = useRef([]);
+  const selectedPhoto = selectedIndex !== null ? photos[selectedIndex] : null;
 
-  // useEffect : charger les photos différemment selon albumId
-  useEffect(() => {
-    fetchPhotos(currentPage);
-    // eslint-disable-next-line
-  }, [albumId, currentPage]);
+  // Fonctions de gestion du modal et du défilement des miniatures.
+  const handleOpenModal = (index) => setSelectedIndex(index);
+  const handleCloseModal = () => setSelectedIndex(null);
 
-  const fetchPhotos = async (page) => {
-    try {
-      setError('');
-
-      if (albumId) {
-        // Récupération des photos d'un album spécifique
-        const data = await getAlbumById(albumId);
-        const album = data.album;
-        if (!album) {
-          setError('Album introuvable.');
-          return;
-        }
-        // Pas de pagination "globale" ici : on récupère tout l'album
-        setPhotos(album.photos || []);
-        setTotalPages(1);
-        setCurrentPage(1);
-      } else {
-        // Récupération de TOUTES les photos (avec pagination)
-        const data = await getPhotos(page, 10); // 10 photos/page
-        setPhotos(data.photos);
-        setTotalPages(data.totalPages);
-      }
-    } catch (err) {
-      console.error(err);
-      setError('Erreur lors du chargement des photos.');
-    }
-  };
-
-  // Pagination
-  const handlePageChange = (newPage) => {
-    if (newPage >= 1 && newPage <= totalPages) {
-      setCurrentPage(newPage);
-    }
-  };
-
-  // Supprimer
-  const handleDelete = async (id) => {
-    try {
-      await deletePhoto(id);
-      setPhotos((prev) => prev.filter((p) => p._id !== id));
-    } catch (err) {
-      console.error(err);
-      setError('Erreur lors de la suppression de la photo.');
-    }
-  };
-
-  const handleDeletePhoto = (e, id) => {
-    e.stopPropagation();
-    handleDelete(id);
-  };
-
-  // Modal
-  const handleOpenModal = (index) => {
-    setSelectedIndex(index);
-  };
-  const handleCloseModal = () => {
-    setSelectedIndex(null);
-  };
-
-  // Clic sur miniature -> scroller le ruban
   const handleThumbnailClick = (idx) => {
     setSelectedIndex(idx);
     if (!scrollContainerRef.current || !thumbnailRefs.current[idx]) return;
-
     const container = scrollContainerRef.current;
     const thumbnail = thumbnailRefs.current[idx];
-
     const offsetLeft = thumbnail.offsetLeft;
     const halfContainerWidth = container.clientWidth / 2;
     const halfThumbWidth = thumbnail.clientWidth / 2;
-
     const scrollPosition = offsetLeft + halfThumbWidth - halfContainerWidth;
     container.scrollTo({ left: scrollPosition, behavior: 'smooth' });
   };
 
-  // Rendu
+  const handleDeletePhoto = (e, id) => {
+    e.stopPropagation();
+    deletePhoto(id);
+  };
+
+  // Gestion de la pagination pour la vue globale
+  const handlePrevPage = () => {
+    if (page > 1) setPage(page - 1);
+  };
+
+  const handleNextPage = () => {
+    if (page < totalPages) setPage(page + 1);
+  };
+
   return (
     <div className="p-0">
-      {error && <p className="text-red-400 mb-4">{error}</p>}
-
-      {/* Galerie (masonry) */}
+      {error && <p className="text-red-400 mb-4">{error.message}</p>}
+      {isLoading && <p className="text-white">Chargement...</p>}
+      
+      {/* Galerie en mode "masonry" */}
       <div className="columns-3 md:columns-3 xl:columns-5 gap-1">
         {photos.map((photo, index) => (
           <div
@@ -125,25 +103,12 @@ function PhotoGallery({ albumId, isAdmin = false }) {
                   : photo.signedUrl
               }
               alt={photo.title}
-              className="
-                w-full h-auto
-                object-cover
-                rounded
-                transition-all duration-300
-                group-hover:scale-105
-                group-hover:brightness-110
-              "
+              className="w-full h-auto object-cover rounded transition-all duration-300 group-hover:scale-105 group-hover:brightness-110"
             />
-            {/* Bouton supprimer si admin/auth */}
             {isAuthenticated && isAdmin && (
               <button
                 onClick={(e) => handleDeletePhoto(e, photo._id)}
-                className="
-                  absolute top-2 right-2
-                  bg-red-600 text-white px-2 py-1 text-sm
-                  rounded opacity-0 group-hover:opacity-100
-                  transition
-                "
+                className="absolute top-2 right-2 bg-red-600 text-white px-2 py-1 text-sm rounded opacity-0 group-hover:opacity-100 transition"
               >
                 Suppr
               </button>
@@ -152,17 +117,13 @@ function PhotoGallery({ albumId, isAdmin = false }) {
         ))}
       </div>
 
-      {/* Pagination (uniquement si on n'a pas d'albumId) */}
-      {!albumId && (
+      {/* Boutons de pagination pour la vue globale */}
+      {!isAlbumView && (
         <div className="flex items-center justify-center mt-6 space-x-2">
           <button
-            onClick={() => handlePageChange(currentPage - 1)}
-            disabled={currentPage <= 1}
-            className="
-           px-2 py-1 border border-gray-600 rounded disabled:opacity-50
-           sm:px-4 sm:py-2
-           md:px-5 md:py-2.5
-         "
+            onClick={handlePrevPage}
+            disabled={page <= 1}
+            className="px-2 py-1 border border-gray-600 rounded disabled:opacity-50 sm:px-4 sm:py-2 md:px-5 md:py-2.5"
           >
             Précédent
           </button>
@@ -170,13 +131,9 @@ function PhotoGallery({ albumId, isAdmin = false }) {
             Page {currentPage} / {totalPages}
           </span>
           <button
-            onClick={() => handlePageChange(currentPage + 1)}
-            disabled={currentPage >= totalPages}
-            className="
-           px-2 py-1 border border-gray-600 rounded disabled:opacity-50
-           sm:px-4 sm:py-2
-           md:px-5 md:py-2.5
-         "
+            onClick={handleNextPage}
+            disabled={page >= totalPages}
+            className="px-2 py-1 border border-gray-600 rounded disabled:opacity-50 sm:px-4 sm:py-2 md:px-5 md:py-2.5"
           >
             Suivant
           </button>
@@ -189,38 +146,14 @@ function PhotoGallery({ albumId, isAdmin = false }) {
           className="fixed inset-0 z-50 bg-black bg-opacity-80"
           onClick={handleCloseModal}
         >
-          {/* Bouton fermer */}
           <button
             onClick={handleCloseModal}
-            className="
-        text-white text-2xl
-        absolute top-4 right-4
-        bg-gray-700 hover:bg-gray-600
-        rounded-full w-10 h-10
-        flex items-center justify-center
-        z-10
-      "
+            className="text-white text-2xl absolute top-4 right-4 bg-gray-700 hover:bg-gray-600 rounded-full w-10 h-10 flex items-center justify-center z-10"
           >
             ✕
           </button>
-
-          <div
-            className="relative w-full h-full"
-            onClick={(e) => e.stopPropagation()}
-          >
-            {/* Photo principale */}
-            <div
-              className="
-    absolute top-[43%] left-1/2  /* Décalage vers le haut par défaut */
-    -translate-x-1/2 -translate-y-1/2
-    w-[90vw] h-[50vh]  /* Taille par défaut pour mobile */
-    sm:w-[80vw] sm:h-[60vh]  /* Taille pour petits écrans */
-    md:w-[70vw] md:h-[70vh]  /* Taille pour écrans moyens */
-    lg:w-[55vw] lg:h-[75vh]  /* Taille légèrement réduite pour grands écrans */
-    xl:w-[45vw] xl:h-[85vh]  /* Taille légèrement réduite pour très grands écrans */
-    flex items-center justify-center
-  "
-            >
+          <div className="relative w-full h-full" onClick={(e) => e.stopPropagation()}>
+            <div className="absolute top-[43%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90vw] h-[50vh] sm:w-[80vw] sm:h-[60vh] md:w-[70vw] md:h-[70vh] lg:w-[55vw] lg:h-[75vh] xl:w-[45vw] xl:h-[85vh] flex items-center justify-center">
               <img
                 crossOrigin="anonymous"
                 src={
@@ -229,63 +162,25 @@ function PhotoGallery({ albumId, isAdmin = false }) {
                     : selectedPhoto.signedUrl
                 }
                 alt={selectedPhoto.title}
-                className="
-      object-contain
-      w-full h-full  /* L'image occupe toute la place disponible */
-    "
+                className="object-contain w-full h-full"
               />
             </div>
-
-            {/* Titre + description */}
-            <div
-  className="
-    absolute top-[75%] left-1/2  /* Position sous l'image sur mobile */
-    -translate-x-1/2 -translate-y-1/2
-    w-[80vw]  /* Largeur adaptée pour mobile */
-    text-white text-center  /* Centrer le texte sur mobile */
-    sm:top-[85%] sm:left-1/2 sm:right-auto sm:translate-x-1/2  /* Centré sous l'image sur petits écrans */
-    sm:w-[80vw] sm:text-center  /* Largeur et alignement pour petits écrans */
-    md:top-1/2 md:left-auto md:right-40 md:translate-x-0  /* Déplacé à droite sur écrans moyens */
-    md:w-48 md:text-left  /* Largeur fixe et alignement à gauche sur écrans moyens */
-  "
->
-  <h3 className="text-lg font-bold mb-1">{selectedPhoto.title}</h3>
-  <p className="text-sm text-gray-300">
-    {selectedPhoto.description}
-  </p>
-</div>
-
-            {/* Ruban en bas */}
+            <div className="absolute top-[75%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80vw] text-white text-center sm:top-[85%] sm:left-1/2 sm:text-center md:top-1/2 md:left-auto md:right-40 md:translate-x-0 md:w-48 md:text-left">
+              <h3 className="text-lg font-bold mb-1">{selectedPhoto.title}</h3>
+              <p className="text-sm text-gray-300">{selectedPhoto.description}</p>
+            </div>
+            {/* Ruban de miniatures */}
             <div
               ref={scrollContainerRef}
-              className="
-          absolute bottom-0 left-0 right-0
-          h-16  /* Hauteur réduite pour mobile */
-          sm:h-20  /* Hauteur moyenne pour petits écrans */
-          md:h-24  /* Hauteur d'origine pour écrans moyens et plus grands */
-          bg-black bg-opacity-90
-          flex items-center
-          px-2
-          overflow-x-auto
-          whitespace-nowrap
-        "
+              className="absolute bottom-0 left-0 right-0 h-16 sm:h-20 md:h-24 bg-black bg-opacity-90 flex items-center px-2 overflow-x-auto whitespace-nowrap"
             >
               {photos.map((thumb, idx) => (
                 <div
                   key={thumb._id}
                   ref={(el) => (thumbnailRefs.current[idx] = el)}
-                  className={`
-              cursor-pointer mr-2
-              w-16 h-[90%]  /* Taille réduite pour mobile */
-              sm:w-20  /* Taille moyenne pour petits écrans */
-              md:w-24  /* Taille d'origine pour écrans moyens et plus grands */
-              flex-shrink-0 border-2
-              ${idx === selectedIndex
-                      ? 'border-white'
-                      : 'border-transparent'
-                    }
-              hover:border-white
-            `}
+                  className={`cursor-pointer mr-2 w-16 h-[90%] sm:w-20 md:w-24 flex-shrink-0 border-2 ${
+                    idx === selectedIndex ? 'border-white' : 'border-transparent'
+                  } hover:border-white`}
                   onClick={(e) => {
                     e.stopPropagation();
                     handleThumbnailClick(idx);

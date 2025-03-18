@@ -1,21 +1,24 @@
-import React, { useContext, useState } from 'react';
-import { AlbumContext } from '../../context/AlbumContext';
+// src/components/forms/ManageAlbums.jsx
+import React, { useState } from 'react';
+import { useAlbums } from '../../hooks/useAlbums'; // On importe le hook personnalisé
 import '../../styles/styles.css';
 
 function ManageAlbums() {
-  const { albums, createAlbum, updateAlbum, deleteAlbum } = useContext(AlbumContext);
+  // On récupère les albums et les fonctions de mutation via le hook useAlbums
+  const { albums, isLoading, error, createAlbum, updateAlbum, deleteAlbum } = useAlbums();
 
-  // States pour le form de création
+  // State pour le formulaire de création d'album
   const [newAlbumName, setNewAlbumName] = useState('');
   const [newAlbumDescription, setNewAlbumDescription] = useState('');
   const [newAlbumCover, setNewAlbumCover] = useState(null);
 
-  // States pour la modification
+  // State pour la modification d'un album existant
   const [editAlbumId, setEditAlbumId] = useState(null);
   const [editAlbumName, setEditAlbumName] = useState('');
   const [editAlbumDescription, setEditAlbumDescription] = useState('');
   const [editAlbumCover, setEditAlbumCover] = useState(null);
 
+  // Fonction de création d'un album
   const handleCreateAlbum = async (e) => {
     e.preventDefault();
     const formData = new FormData();
@@ -26,12 +29,14 @@ function ManageAlbums() {
     }
     const result = await createAlbum(formData);
     if (result.success) {
+      // Réinitialisation des champs après création
       setNewAlbumName('');
       setNewAlbumDescription('');
       setNewAlbumCover(null);
     }
   };
 
+  // Préparer le formulaire de modification pour l'album sélectionné
   const handleEditAlbum = (album) => {
     setEditAlbumId(album._id);
     setEditAlbumName(album.name);
@@ -39,6 +44,7 @@ function ManageAlbums() {
     setEditAlbumCover(null);
   };
 
+  // Mise à jour de l'album
   const handleUpdateAlbum = async (e) => {
     e.preventDefault();
     const formData = new FormData();
@@ -47,8 +53,11 @@ function ManageAlbums() {
     if (editAlbumCover) {
       formData.append('coverPhoto', editAlbumCover);
     }
-    const result = await updateAlbum(editAlbumId, formData);
-    if (result.success) {
+    // Appel de la mutation en passant un objet contenant l'id et formData
+    const result = await updateAlbum({ id: editAlbumId, formData });
+    if (result.album) {
+      console.log("testt")
+      // Réinitialisation de l'état de modification afin de revenir à l'affichage initial ("Modifier" / "Supprimer")
       setEditAlbumId(null);
       setEditAlbumName('');
       setEditAlbumDescription('');
@@ -56,12 +65,21 @@ function ManageAlbums() {
     }
   };
 
+  // Suppression d'un album après confirmation
   const handleDeleteAlbum = async (albumId) => {
     const sure = window.confirm('Voulez-vous vraiment supprimer cet album ?');
     if (sure) {
       await deleteAlbum(albumId);
     }
   };
+
+  // Gestion des états de chargement ou d'erreur (optionnel)
+  if (isLoading) {
+    return <div className="text-center text-white mt-4">Chargement...</div>;
+  }
+  if (error) {
+    return <div className="text-center text-red-400 mt-4">{error.message}</div>;
+  }
 
   return (
     <div className="container-box">
@@ -93,7 +111,7 @@ function ManageAlbums() {
         <div>
           <label className="label-field mb-2">Cover Photo</label>
           <div className="flex items-center space-x-4">
-            {/* Label custom pour l'upload */}
+            {/* Label personnalisé pour l'upload de fichier */}
             <label className="file-input-label">
               <span>Choisir un fichier</span>
               <input
@@ -102,7 +120,7 @@ function ManageAlbums() {
                 onChange={(e) => setNewAlbumCover(e.target.files[0])}
               />
             </label>
-            {/* Affiche le nom du fichier si sélectionné */}
+            {/* Affichage du nom du fichier sélectionné */}
             {newAlbumCover && (
               <span className="text-sm text-gray-400">{newAlbumCover.name}</span>
             )}
