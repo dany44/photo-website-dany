@@ -1,10 +1,11 @@
-import React, { useState, useEffect, useContext } from 'react';
+// src/components/forms/AddPhotoForm.jsx
+import React, { useState, useEffect } from 'react';
 import { uploadPhoto } from '../../api/photos';
-import { AlbumContext } from '../../context/AlbumContext';
-import '../../styles/styles.css'; // Importation des styles globaux
+import { useAlbums } from '../../hooks/useAlbums';
+import '../../styles/styles.css';
 
 function AddPhotoForm() {
-  const { albums, fetchAlbums } = useContext(AlbumContext);
+  const { albums, isLoading, error } = useAlbums();
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [image, setImage] = useState(null);
@@ -15,7 +16,7 @@ function AddPhotoForm() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    fetchAlbums();
+    // Avec React Query, le hook useAlbums s'occupe du fetch, donc pas besoin de fetchAlbums ici
   }, []);
 
   const handleImageChange = (e) => {
@@ -61,6 +62,9 @@ function AddPhotoForm() {
     }
   };
 
+  if (isLoading) return <p>Chargement...</p>;
+  if (error) return <p>Erreur: {error.message}</p>;
+
   return (
     <div className="container-box">
       <h2 className="text-2xl font-bold mb-6">Ajouter une Nouvelle Photo</h2>
@@ -72,11 +76,8 @@ function AddPhotoForm() {
       )}
 
       <form onSubmit={handleSubmit} className="space-y-6">
-        {/* Champ Titre */}
         <div>
-          <label htmlFor="title" className="label-field">
-            Titre
-          </label>
+          <label htmlFor="title" className="label-field">Titre</label>
           <input
             type="text"
             id="title"
@@ -87,12 +88,8 @@ function AddPhotoForm() {
             required
           />
         </div>
-
-        {/* Champ Description */}
         <div>
-          <label htmlFor="description" className="label-field">
-            Description
-          </label>
+          <label htmlFor="description" className="label-field">Description</label>
           <textarea
             id="description"
             value={description}
@@ -103,12 +100,8 @@ function AddPhotoForm() {
             required
           />
         </div>
-
-        {/* Sélection d'album */}
         <div>
-          <label htmlFor="albumSelect" className="label-field">
-            Album
-          </label>
+          <label htmlFor="albumSelect" className="label-field">Album</label>
           <select
             id="albumSelect"
             value={selectedAlbum}
@@ -124,14 +117,9 @@ function AddPhotoForm() {
             ))}
           </select>
         </div>
-
-        {/* Upload de l'image */}
         <div>
-          <label htmlFor="image" className="label-field mb-2">
-            Image
-          </label>
+          <label htmlFor="image" className="label-field mb-2">Image</label>
           <div className="flex items-center space-x-4">
-            {/* Label custom pour l'upload */}
             <label className="file-input-label">
               <span>Choisir un fichier</span>
               <input
@@ -142,16 +130,9 @@ function AddPhotoForm() {
                 required
               />
             </label>
-            {/* Nom du fichier sélectionné */}
-            {image && (
-              <span className="text-sm text-gray-400">
-                {image.name}
-              </span>
-            )}
+            {image && <span className="text-sm text-gray-400">{image.name}</span>}
           </div>
         </div>
-
-        {/* Aperçu de l'image */}
         {preview && (
           <img
             src={preview}
@@ -159,13 +140,7 @@ function AddPhotoForm() {
             className="w-full h-auto rounded-lg border border-gray-600 shadow-sm"
           />
         )}
-
-        {/* Bouton de soumission */}
-        <button
-          type="submit"
-          className="button-primary w-full sm:w-auto"
-          disabled={loading}
-        >
+        <button type="submit" className="button-primary w-full sm:w-auto" disabled={loading}>
           {loading ? 'Téléchargement...' : 'Ajouter'}
         </button>
       </form>

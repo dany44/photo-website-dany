@@ -1,7 +1,8 @@
-import React, { useContext } from "react";
+// src/components/Sidebar.jsx
+import React from "react";
 import { NavLink } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
-import { AlbumContext } from "../../context/AlbumContext";
+import { useAlbums } from "../../hooks/useAlbums";
 import {
   FaHome,
   FaUserShield,
@@ -12,10 +13,9 @@ import {
 } from "react-icons/fa";
 
 const Sidebar = ({ closeSidebar }) => {
-  const { isAuthenticated, logout } = useContext(AuthContext);
-  const { albums, loading } = useContext(AlbumContext);
+  const { isAuthenticated, logout } = React.useContext(AuthContext);
+  const { albums, isLoading } = useAlbums();
 
-  // Fonction pour fermer la sidebar uniquement sur mobile
   const handleNavigation = () => {
     if (window.innerWidth < 768) {
       closeSidebar();
@@ -35,8 +35,7 @@ const Sidebar = ({ closeSidebar }) => {
           to="/"
           onClick={handleNavigation}
           className={({ isActive }) =>
-            `flex items-center px-4 py-2 transition-colors 
-            ${isActive ? "bg-gray-500" : "hover:bg-gray-700"}`
+            `flex items-center px-4 py-2 transition-colors ${isActive ? "bg-gray-500" : "hover:bg-gray-700"}`
           }
         >
           <FaHome className="text-xl" />
@@ -48,8 +47,7 @@ const Sidebar = ({ closeSidebar }) => {
             to="/admin"
             onClick={handleNavigation}
             className={({ isActive }) =>
-              `flex items-center px-4 py-2 transition-colors
-              ${isActive ? "bg-gray-500" : "hover:bg-gray-800"}`
+              `flex items-center px-4 py-2 transition-colors ${isActive ? "bg-gray-500" : "hover:bg-gray-800"}`
             }
           >
             <FaUserShield className="text-xl" />
@@ -57,19 +55,16 @@ const Sidebar = ({ closeSidebar }) => {
           </NavLink>
         )}
 
-        {!loading && albums.length > 0 && (
+        {!isLoading && albums.length > 0 && (
           <div className="mt-4">
-            <h3 className="px-4 py-2 text-gray-400 uppercase text-xs">
-              Albums
-            </h3>
+            <h3 className="px-4 py-2 text-gray-400 uppercase text-xs">Albums</h3>
             {albums.map((album) => (
               <NavLink
                 key={album._id}
                 to={`/album/${album._id}`}
                 onClick={handleNavigation}
                 className={({ isActive }) =>
-                  `flex items-center px-6 py-2 transition-colors
-                  ${isActive ? "bg-gray-700" : "hover:bg-gray-800"}`
+                  `flex items-center px-6 py-2 transition-colors ${isActive ? "bg-gray-700" : "hover:bg-gray-800"}`
                 }
               >
                 <FaFolderOpen className="text-lg" />
@@ -84,8 +79,7 @@ const Sidebar = ({ closeSidebar }) => {
             to="/login"
             onClick={handleNavigation}
             className={({ isActive }) =>
-              `flex items-center px-4 py-2 transition-colors
-              ${isActive ? "bg-gray-500" : "hover:bg-gray-800"}`
+              `flex items-center px-4 py-2 transition-colors ${isActive ? "bg-gray-500" : "hover:bg-gray-800"}`
             }
           >
             <FaSignInAlt className="text-xl" />
@@ -110,8 +104,7 @@ const Sidebar = ({ closeSidebar }) => {
           to="/about"
           onClick={handleNavigation}
           className={({ isActive }) =>
-            `flex items-center px-4 py-2 transition-colors 
-            ${isActive ? "bg-gray-500" : "hover:bg-gray-700"}`
+            `flex items-center px-4 py-2 transition-colors ${isActive ? "bg-gray-500" : "hover:bg-gray-700"}`
           }
         >
           <FaInfoCircle className="text-xl" />
