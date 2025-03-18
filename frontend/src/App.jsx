@@ -51,16 +51,15 @@ function App() {
         <Sidebar closeSidebar={closeSidebar} />
       </div>
 
-      {/* Conteneur principal décalé en fonction de isSidebarVisible */}
+      {/* Conteneur principal sans décalage lorsqu'on ouvre la sidebar */}
       <div
-        className={`
+        className="
           bg-gray-900 text-white
           transition-all duration-300
           min-h-screen
           p-0
-          ${isSidebarVisible ? "ml-64" : "ml-0"}
           md:ml-64
-        `}
+        "
       >
         {/* Exemple : header, puis les routes/pages */}
         <header className="mb-0"></header>
