@@ -7,7 +7,6 @@ const axiosInstance = axios.create({
 });
 
 // Ajouter un intercepteur de réponse
-// Ajouter un intercepteur de réponse
 axiosInstance.interceptors.response.use(
     response => response,
     error => {
