@@ -106,16 +106,16 @@ function PhotoGallery({ albumId, isAdmin = false }) {
 
   // Rendu
   return (
-    <div className="p-4">
+    <div className="p-0">
       {error && <p className="text-red-400 mb-4">{error}</p>}
 
       {/* Galerie (masonry) */}
-      <div className="columns-1 md:columns-3 xl:columns-5 gap-4">
+      <div className="columns-3 md:columns-3 xl:columns-5 gap-1">
         {photos.map((photo, index) => (
           <div
             key={photo._id}
             onClick={() => handleOpenModal(index)}
-            className="mb-4 break-inside-avoid relative group cursor-pointer"
+            className="mb-1 break-inside-avoid relative group cursor-pointer"
           >
             <img
               crossOrigin="anonymous"
