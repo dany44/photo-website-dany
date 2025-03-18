@@ -65,46 +65,120 @@ function ManageAlbums() {
 
   return (
     <div className="container-box">
-      <h2 className="text-2xl font-bold mb-4">Gérer les Albums</h2>
+      {/* Titre du formulaire d'ajout */}
+      <h2 className="text-2xl font-bold mb-6">Ajouter un album</h2>
 
       {/* Formulaire de création d'album */}
-      <form onSubmit={handleCreateAlbum} className="space-y-3">
+      <form onSubmit={handleCreateAlbum} className="space-y-4 mb-8">
         <div>
           <label className="label-field">Nom de l'album</label>
-          <input type="text" value={newAlbumName} onChange={(e) => setNewAlbumName(e.target.value)} required className="input-field" />
+          <input
+            type="text"
+            value={newAlbumName}
+            onChange={(e) => setNewAlbumName(e.target.value)}
+            required
+            className="input-field"
+            placeholder="Ex: GR20"
+          />
         </div>
         <div>
           <label className="label-field">Description</label>
-          <textarea value={newAlbumDescription} onChange={(e) => setNewAlbumDescription(e.target.value)} className="input-field" />
+          <textarea
+            value={newAlbumDescription}
+            onChange={(e) => setNewAlbumDescription(e.target.value)}
+            className="input-field"
+            placeholder="Description de l'album..."
+          />
         </div>
         <div>
-          <label className="label-field">Cover Photo</label>
-          <input type="file" accept="image/*" onChange={(e) => setNewAlbumCover(e.target.files[0])} className="input-field" />
+          <label className="label-field mb-2">Cover Photo</label>
+          <div className="flex items-center space-x-4">
+            {/* Label custom pour l'upload */}
+            <label className="file-input-label">
+              <span>Choisir un fichier</span>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(e) => setNewAlbumCover(e.target.files[0])}
+              />
+            </label>
+            {/* Affiche le nom du fichier si sélectionné */}
+            {newAlbumCover && (
+              <span className="text-sm text-gray-400">{newAlbumCover.name}</span>
+            )}
+          </div>
         </div>
-        <button type="submit" className="button-primary">Créer l'album</button>
+        <button type="submit" className="button-primary w-full sm:w-auto">
+          Créer l'album
+        </button>
       </form>
 
+      {/* Titre de la section de gestion */}
+      <h2 className="text-2xl font-bold mb-6">Gérer les albums</h2>
+
       {/* Liste des albums */}
-      <div className="space-y-4 mt-6">
+      <div className="space-y-4">
         {albums.map((album) => (
-          <div key={album._id} className="border border-gray-700 p-4 rounded flex justify-between items-center">
+          <div
+            key={album._id}
+            className="border border-gray-700 p-4 rounded-md flex flex-col sm:flex-row sm:items-center sm:justify-between"
+          >
             {editAlbumId === album._id ? (
-              <form onSubmit={handleUpdateAlbum} className="flex-1 flex space-x-2 items-center">
-                <input type="text" value={editAlbumName} onChange={(e) => setEditAlbumName(e.target.value)} className="input-field flex-1" />
-                <textarea value={editAlbumDescription} onChange={(e) => setEditAlbumDescription(e.target.value)} className="input-field flex-1" />
-                <input type="file" accept="image/*" onChange={(e) => setEditAlbumCover(e.target.files[0])} className="input-field" />
-                <button type="submit" className="button-success">Sauvegarder</button>
-                <button type="button" className="button-secondary" onClick={() => setEditAlbumId(null)}>Annuler</button>
+              <form
+                onSubmit={handleUpdateAlbum}
+                className="flex-1 flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 items-start sm:items-center"
+              >
+                <input
+                  type="text"
+                  value={editAlbumName}
+                  onChange={(e) => setEditAlbumName(e.target.value)}
+                  className="input-field flex-1"
+                  placeholder="Nom de l'album"
+                />
+                <textarea
+                  value={editAlbumDescription}
+                  onChange={(e) => setEditAlbumDescription(e.target.value)}
+                  className="input-field flex-1"
+                  placeholder="Description"
+                />
+                <label className="file-input-label">
+                  <span>Changer cover</span>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => setEditAlbumCover(e.target.files[0])}
+                  />
+                </label>
+                <button type="submit" className="button-success">
+                  Sauvegarder
+                </button>
+                <button
+                  type="button"
+                  className="button-secondary"
+                  onClick={() => setEditAlbumId(null)}
+                >
+                  Annuler
+                </button>
               </form>
             ) : (
               <>
-                <div className="flex-1">
+                <div className="flex-1 mb-2 sm:mb-0">
                   <h3 className="font-semibold text-lg">{album.name}</h3>
                   <p className="text-sm text-gray-300">{album.description}</p>
                 </div>
                 <div className="flex space-x-2">
-                  <button onClick={() => handleEditAlbum(album)} className="button-secondary">Modifier</button>
-                  <button onClick={() => handleDeleteAlbum(album._id)} className="button-danger">Supprimer</button>
+                  <button
+                    onClick={() => handleEditAlbum(album)}
+                    className="button-secondary"
+                  >
+                    Modifier
+                  </button>
+                  <button
+                    onClick={() => handleDeleteAlbum(album._id)}
+                    className="button-danger"
+                  >
+                    Supprimer
+                  </button>
                 </div>
               </>
             )}

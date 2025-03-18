@@ -63,39 +63,109 @@ function AddPhotoForm() {
 
   return (
     <div className="container-box">
-      <h2 className="text-2xl font-bold mb-4">Ajouter une Nouvelle Photo</h2>
+      <h2 className="text-2xl font-bold mb-6">Ajouter une Nouvelle Photo</h2>
 
-      {message && <div className={messageType === 'success' ? 'message-success' : 'message-error'}>{message}</div>}
+      {message && (
+        <div className={messageType === 'success' ? 'message-success' : 'message-error'}>
+          {message}
+        </div>
+      )}
 
       <form onSubmit={handleSubmit} className="space-y-6">
+        {/* Champ Titre */}
         <div>
-          <label htmlFor="title" className="label-field">Titre</label>
-          <input type="text" id="title" value={title} onChange={(e) => setTitle(e.target.value)} className="input-field" required />
+          <label htmlFor="title" className="label-field">
+            Titre
+          </label>
+          <input
+            type="text"
+            id="title"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            className="input-field"
+            placeholder="Ex: Paysage urbain"
+            required
+          />
         </div>
 
+        {/* Champ Description */}
         <div>
-          <label htmlFor="description" className="label-field">Description</label>
-          <textarea id="description" value={description} onChange={(e) => setDescription(e.target.value)} className="input-field" rows="4" required />
+          <label htmlFor="description" className="label-field">
+            Description
+          </label>
+          <textarea
+            id="description"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            className="input-field"
+            rows="4"
+            placeholder="Description de la photo..."
+            required
+          />
         </div>
 
+        {/* Sélection d'album */}
         <div>
-          <label htmlFor="albumSelect" className="label-field">Album</label>
-          <select id="albumSelect" value={selectedAlbum} onChange={(e) => setSelectedAlbum(e.target.value)} className="input-field" required>
+          <label htmlFor="albumSelect" className="label-field">
+            Album
+          </label>
+          <select
+            id="albumSelect"
+            value={selectedAlbum}
+            onChange={(e) => setSelectedAlbum(e.target.value)}
+            className="input-field"
+            required
+          >
             <option value="">-- Sélectionnez un album --</option>
             {albums.map((album) => (
-              <option key={album._id} value={album._id}>{album.name}</option>
+              <option key={album._id} value={album._id}>
+                {album.name}
+              </option>
             ))}
           </select>
         </div>
 
+        {/* Upload de l'image */}
         <div>
-          <label htmlFor="image" className="label-field">Image</label>
-          <input type="file" id="image" accept="image/*" onChange={handleImageChange} className="input-field" required />
+          <label htmlFor="image" className="label-field mb-2">
+            Image
+          </label>
+          <div className="flex items-center space-x-4">
+            {/* Label custom pour l'upload */}
+            <label className="file-input-label">
+              <span>Choisir un fichier</span>
+              <input
+                id="image"
+                type="file"
+                accept="image/*"
+                onChange={handleImageChange}
+                required
+              />
+            </label>
+            {/* Nom du fichier sélectionné */}
+            {image && (
+              <span className="text-sm text-gray-400">
+                {image.name}
+              </span>
+            )}
+          </div>
         </div>
 
-        {preview && <img src={preview} alt="Aperçu" className="w-full h-auto rounded-lg border border-gray-600 shadow-sm" />}
+        {/* Aperçu de l'image */}
+        {preview && (
+          <img
+            src={preview}
+            alt="Aperçu"
+            className="w-full h-auto rounded-lg border border-gray-600 shadow-sm"
+          />
+        )}
 
-        <button type="submit" className="button-primary" disabled={loading}>
+        {/* Bouton de soumission */}
+        <button
+          type="submit"
+          className="button-primary w-full sm:w-auto"
+          disabled={loading}
+        >
           {loading ? 'Téléchargement...' : 'Ajouter'}
         </button>
       </form>
