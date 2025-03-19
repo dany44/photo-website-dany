@@ -1,5 +1,4 @@
-// src/pages/Login/LoginPage.jsx
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../context/AuthContext';
 import LoginForm from '../../components/forms/LoginForm';
@@ -8,6 +7,13 @@ function LoginPage() {
     const navigate = useNavigate();
     const { login, isAuthenticated } = useContext(AuthContext);
     const [error, setError] = useState('');
+
+    useEffect(() => {
+        // Si déjà authentifié, rediriger vers /admin
+        if (isAuthenticated) {
+            navigate('/admin');
+        }
+    }, [isAuthenticated, navigate]);
 
     const handleLogin = async (username, password) => {
         const result = await login(username, password);
@@ -18,12 +24,6 @@ function LoginPage() {
             setError(result.message);
         }
     };
-
-    // Si déjà authentifié, rediriger vers /admin
-    if (isAuthenticated) {
-        navigate('/admin');
-        return null;
-    }
 
     return (
         <div className="min-h-screen bg-gray-900 flex items-center justify-center px-4">

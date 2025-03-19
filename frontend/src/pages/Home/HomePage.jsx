@@ -119,7 +119,7 @@ function HomePage() {
       {/* === Section Albums centrée === */}
       <div className="mb-8 px-4 mt-12">
         <div className="max-w-6xl mx-auto">
-          <h2 className="text-2xl font-semibold mb-12 text-white text-center">Albums</h2>
+          <h2 className="text-2xl font-semibold mb-12 text-white text-center">Portfolio</h2>
           {/* Grille responsive */}
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {albums.map((album) => (
@@ -166,7 +166,7 @@ function HomePage() {
       {/* === Section Photos Récentes centrée === */}
       <div className="mb-8 px-4 mt-12">
         <div className="max-w-6xl mx-auto">
-          <h2 className="text-2xl font-semibold mb-12 text-white text-center">Photos Récentes</h2>
+          <h2 className="text-2xl font-semibold mb-12 text-white text-center">Dernières photos</h2>
           <PhotoGallery />
         </div>
       </div>

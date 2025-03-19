@@ -25,6 +25,16 @@ const PhotoSchema = new mongoose.Schema({
             message: props => `${props.value} n'est pas une URL valide.`,
         },
     },
+    // Champ pour stocker l'identifiant public Cloudinary
+    publicId: {
+        type: String,
+        default: null,
+    },
+    storageMode: { 
+        type: String, 
+        enum: ['aws', 'cloudinary', 'local'], 
+        required: true 
+    },
     createdAt: {
         type: Date,
         default: Date.now,

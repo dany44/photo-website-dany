@@ -23,6 +23,14 @@ exports.createAlbum = async (req, res, next) => {
     try {
         const { name, description } = req.body;
 
+        // Validation côté serveur basée sur votre modèle Mongoose
+        if (!name || name.trim().length < 3 || name.trim().length > 100) {
+            return res.status(400).json({ message: "Le nom de l'album doit contenir entre 3 et 100 caractères." });
+        }
+        if (description && description.trim().length > 500) {
+            return res.status(400).json({ message: "La description ne peut pas dépasser 500 caractères." });
+        }
+
         let coverPhotoPath = null;
 
         if (req.file) {
@@ -47,8 +55,8 @@ exports.createAlbum = async (req, res, next) => {
         }
 
         const newAlbum = new Album({
-            name,
-            description,
+            name: name.trim(),
+            description: description ? description.trim() : '',
             coverPhoto: coverPhotoPath,
         });
 
@@ -71,20 +79,16 @@ exports.getAllAlbums = async (req, res, next) => {
         // Générer une URL signée pour chaque coverPhoto (si existante)
         for (const album of albums) {
           if (album.coverPhoto) {
-            // Exemple : album.coverPhoto = 
-            //   "https://bucket.s3.region.amazonaws.com/albums/12345.jpg"
-            // On en extrait la partie après ".com/"
             const splitted = album.coverPhoto.split('.com/');
             if (splitted.length > 1) {
-              const key = splitted[1]; // ex: "albums/12345.jpg"
+              const key = splitted[1];
               const signedUrl = await generateSignedUrl(key);
               album.coverPhoto = signedUrl; 
             }
           }
         }
       } else {
-        // Stockage local : 
-        // si coverPhoto commence par "/uploads/albums/...", on la préfixe de http://localhost:3000
+        // Pour le stockage local
         for (const album of albums) {
           if (album.coverPhoto && album.coverPhoto.startsWith('/uploads/')) {
             album.coverPhoto = `http://localhost:3000${album.coverPhoto}`;
@@ -97,7 +101,7 @@ exports.getAllAlbums = async (req, res, next) => {
     } catch (error) {
       next(error);
     }
-  };
+};
 
 // Récupérer un album par ID
 exports.getAlbumById = async (req, res, next) => {
@@ -105,14 +109,15 @@ exports.getAlbumById = async (req, res, next) => {
         const album = await Album.findById(req.params.id).populate('photos');
         if (!album) {
             config.log('warn', `Album non trouvé : ${req.params.id}`);
-            res.status(404).json({ message: 'Album non trouvé.' });
+            return res.status(404).json({ message: 'Album non trouvé.' });
         }
 
-        // Si stockage en AWS, générer des URLs signées pour les photos
+        // Filtrer les photos selon le mode de stockage courant
+        const filteredPhotos = album.photos.filter(photo => photo.storageMode === config.storageMode);
+
         if (config.storageMode === 'aws') {
-            // Code existant : générer la signedUrl
             const photosWithUrls = await Promise.all(
-                album.photos.map(async (photo) => {
+                filteredPhotos.map(async (photo) => {
                     const key = photo.imagePath.split('.com/')[1];
                     const signedUrl = await generateSignedUrl(key);
                     return { ...photo.toObject(), signedUrl };
@@ -120,15 +125,12 @@ exports.getAlbumById = async (req, res, next) => {
             );
             res.status(200).json({ album: { ...album.toObject(), photos: photosWithUrls } });
         } else {
-            // Pour le local, on crée la clé "signedUrl" égale à imagePath
-            const photosWithUrls = album.photos.map(photo => {
-                return {
-                    ...photo.toObject(),
-                    signedUrl: photo.imagePath
-                };
-            });
+            const photosWithUrls = filteredPhotos.map(photo => ({
+                ...photo.toObject(),
+                signedUrl: photo.imagePath
+            }));
             res.status(200).json({ album: { ...album.toObject(), photos: photosWithUrls } });
-            config.log('info', `Toutes les photos de l'album ${req.params.id} ont été récupérés.`);
+            config.log('info', `Toutes les photos de l'album ${req.params.id} ont été récupérées.`);
         }
     } catch (error) {
         next(error);
@@ -146,8 +148,16 @@ exports.updateAlbum = async (req, res, next) => {
             return res.status(404).json({ message: 'Album non trouvé.' });
         }
 
-        if (name) album.name = name;
-        if (description) album.description = description;
+        // Validation côté serveur
+        if (name && (name.trim().length < 3 || name.trim().length > 100)) {
+            return res.status(400).json({ message: "Le nom de l'album doit contenir entre 3 et 100 caractères." });
+        }
+        if (description && description.trim().length > 500) {
+            return res.status(400).json({ message: "La description ne peut pas dépasser 500 caractères." });
+        }
+
+        if (name) album.name = name.trim();
+        if (description) album.description = description.trim();
 
         if (req.file) {
             // Supprimer l'ancienne photo de couverture si elle existe
@@ -173,7 +183,6 @@ exports.updateAlbum = async (req, res, next) => {
                 await config.s3.send(new PutObjectCommand(params));
                 album.coverPhoto = `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${fileKey}`;
             } else {
-                // Enregistrer localement
                 const uploadDir = path.join(__dirname, '../uploads/albums');
                 if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
                 const uploadPath = path.join(uploadDir, `${Date.now()}-${req.file.originalname}`);
@@ -206,7 +215,6 @@ exports.deleteAlbum = async (req, res, next) => {
             return res.status(400).json({ message: 'Impossible de supprimer un album contenant des photos.' });
         }
 
-        // Supprimer la photo de couverture si elle existe
         if (album.coverPhoto) {
             if (config.storageMode === 'aws') {
                 const key = album.coverPhoto.split('.com/')[1];
@@ -264,11 +272,9 @@ exports.movePhotoToAlbum = async (req, res, next) => {
             return res.status(404).json({ message: 'Album ou Photo non trouvé.' });
         }
 
-        // Retirer la photo de l'ancien album
         fromAlbum.photos = fromAlbum.photos.filter(id => id.toString() !== photoId);
         await fromAlbum.save();
 
-        // Ajouter la photo au nouvel album
         if (!toAlbum.photos.includes(photoId)) {
             toAlbum.photos.push(photoId);
             await toAlbum.save();

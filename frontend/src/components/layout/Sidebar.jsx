@@ -35,19 +35,31 @@ const Sidebar = ({ closeSidebar }) => {
           to="/"
           onClick={handleNavigation}
           className={({ isActive }) =>
-            `flex items-center px-4 py-2 transition-colors ${isActive ? "bg-gray-500" : "hover:bg-gray-700"}`
+            `flex items-center px-4 py-2 transition-colors ${
+              isActive ? "bg-gray-500" : "hover:bg-gray-700"
+            }`
           }
         >
           <FaHome className="text-xl" />
           <span className="ml-2 text-sm">Accueil</span>
         </NavLink>
 
+        {/* Section Blog (placeholder, pas de nav pour le moment) */}
+        <div className="mt-4 px-4 py-2 border-t border-gray-700">
+          <h3 className="text-lg font-semibold text-gray-100">Blog</h3>
+          <p className="text-xs text-gray-400 mt-1">
+            Bientôt disponible...
+          </p>
+        </div>
+
         {isAuthenticated && (
           <NavLink
             to="/admin"
             onClick={handleNavigation}
             className={({ isActive }) =>
-              `flex items-center px-4 py-2 transition-colors ${isActive ? "bg-gray-500" : "hover:bg-gray-800"}`
+              `flex items-center px-4 py-2 transition-colors ${
+                isActive ? "bg-gray-500" : "hover:bg-gray-800"
+              }`
             }
           >
             <FaUserShield className="text-xl" />
@@ -57,14 +69,18 @@ const Sidebar = ({ closeSidebar }) => {
 
         {!isLoading && albums.length > 0 && (
           <div className="mt-4">
-            <h3 className="px-4 py-2 text-gray-400 uppercase text-xs">Albums</h3>
+            <h3 className="px-4 py-2 text-gray-400 uppercase text-xs">
+              Portfolio
+            </h3>
             {albums.map((album) => (
               <NavLink
                 key={album._id}
                 to={`/album/${album._id}`}
                 onClick={handleNavigation}
                 className={({ isActive }) =>
-                  `flex items-center px-6 py-2 transition-colors ${isActive ? "bg-gray-700" : "hover:bg-gray-800"}`
+                  `flex items-center px-6 py-2 transition-colors ${
+                    isActive ? "bg-gray-700" : "hover:bg-gray-800"
+                  }`
                 }
               >
                 <FaFolderOpen className="text-lg" />
@@ -79,7 +95,9 @@ const Sidebar = ({ closeSidebar }) => {
             to="/login"
             onClick={handleNavigation}
             className={({ isActive }) =>
-              `flex items-center px-4 py-2 transition-colors ${isActive ? "bg-gray-500" : "hover:bg-gray-800"}`
+              `flex items-center px-4 py-2 transition-colors ${
+                isActive ? "bg-gray-500" : "hover:bg-gray-800"
+              }`
             }
           >
             <FaSignInAlt className="text-xl" />
@@ -104,7 +122,9 @@ const Sidebar = ({ closeSidebar }) => {
           to="/about"
           onClick={handleNavigation}
           className={({ isActive }) =>
-            `flex items-center px-4 py-2 transition-colors ${isActive ? "bg-gray-500" : "hover:bg-gray-700"}`
+            `flex items-center px-4 py-2 transition-colors ${
+              isActive ? "bg-gray-500" : "hover:bg-gray-700"
+            }`
           }
         >
           <FaInfoCircle className="text-xl" />
