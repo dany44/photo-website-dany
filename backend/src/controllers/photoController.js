@@ -196,7 +196,7 @@ exports.getPhotos = async (req, res, next) => {
             .skip(skip)
             .limit(limit);
 
-        const total = await Photo.countDocuments(); // Nombre total de documents
+        const total = await Photo.countDocuments({ storageMode: config.storageMode }); // Nombre total de documents
         const totalPages = Math.ceil(total / limit); // Calcul du nombre total de pages
 
         const photosWithUrls = await Promise.all(

@@ -1,5 +1,6 @@
 // src/components/gallery/PhotoGallery.jsx
 import React, { useState, useRef } from 'react';
+import Slider from "react-slick";
 import { AuthContext } from '../../context/AuthContext';
 import { usePhotos } from '../../hooks/usePhotos';
 import { useAlbumPhotos } from '../../hooks/useAlbumPhotos';
@@ -7,7 +8,7 @@ import { useAlbumPhotos } from '../../hooks/useAlbumPhotos';
 function PhotoGallery({ albumId, isAdmin = false }) {
   const { isAuthenticated } = React.useContext(AuthContext);
 
-  // Pour la vue globale, on utilise une state pour la page
+  // Pour la vue globale (non album), on utilise une state pour la page
   const [page, setPage] = useState(1);
 
   // Appel inconditionnel des deux hooks.
@@ -16,7 +17,7 @@ function PhotoGallery({ albumId, isAdmin = false }) {
   // usePhotos : n'est activé que si aucun albumId n'est passé.
   const photosQuery = usePhotos(page, 10, { enabled: !albumId });
 
-  // On détermine la vue à utiliser : album spécifique ou globale.
+  // Déterminer la vue à utiliser : album spécifique ou globale.
   const isAlbumView = Boolean(albumId);
 
   // Pour la vue album, on extrait les photos depuis albumQuery, sinon on prend les données de photosQuery.
@@ -52,6 +53,38 @@ function PhotoGallery({ albumId, isAdmin = false }) {
   const thumbnailRefs = useRef([]);
   const selectedPhoto = selectedIndex !== null ? photos[selectedIndex] : null;
 
+  // Définition des paramètres du slider pour la vue non-admin
+  const sliderSettings = {
+    dots: false,
+    infinite: false,
+    speed: 500,
+    slidesToShow: 5,
+    slidesToScroll: 1,
+    responsive: [
+      {
+        breakpoint: 1024,
+        settings: {
+          slidesToShow: 3,
+          slidesToScroll: 1,
+        },
+      },
+      {
+        breakpoint: 600,
+        settings: {
+          slidesToShow: 2,
+          slidesToScroll: 1,
+        },
+      },
+      {
+        breakpoint: 480,
+        settings: {
+          slidesToShow: 1,
+          slidesToScroll: 1,
+        },
+      },
+    ],
+  };
+
   // Fonctions de gestion du modal et du défilement des miniatures.
   const handleOpenModal = (index) => setSelectedIndex(index);
   const handleCloseModal = () => setSelectedIndex(null);
@@ -73,7 +106,7 @@ function PhotoGallery({ albumId, isAdmin = false }) {
     deletePhoto(id);
   };
 
-  // Gestion de la pagination pour la vue globale
+  // Gestion de la pagination pour la vue globale admin
   const handlePrevPage = () => {
     if (page > 1) setPage(page - 1);
   };
@@ -87,57 +120,112 @@ function PhotoGallery({ albumId, isAdmin = false }) {
       {error && <p className="text-red-400 mb-4">{error.message}</p>}
       {isLoading && <p className="text-white">Chargement...</p>}
       
-      {/* Galerie en mode "masonry" */}
-      <div className="columns-3 md:columns-3 xl:columns-5 gap-1">
-        {photos.map((photo, index) => (
-          <div
-            key={photo._id}
-            onClick={() => handleOpenModal(index)}
-            className="mb-1 break-inside-avoid relative group cursor-pointer"
-          >
-            <img
-              crossOrigin="anonymous"
-              src={
-                photo.signedUrl?.startsWith('/')
-                  ? `http://localhost:3000${photo.signedUrl}`
-                  : photo.signedUrl
-              }
-              alt={photo.title}
-              className="w-full h-auto object-cover rounded transition-all duration-300 group-hover:scale-105 group-hover:brightness-110"
-            />
-            {isAuthenticated && isAdmin && (
-              <button
-                onClick={(e) => handleDeletePhoto(e, photo._id)}
-                className="absolute top-2 right-2 bg-red-600 text-white px-2 py-1 text-sm rounded opacity-0 group-hover:opacity-100 transition"
-              >
-                Suppr
-              </button>
-            )}
-          </div>
-        ))}
-      </div>
-
-      {/* Boutons de pagination pour la vue globale */}
-      {!isAlbumView && (
-        <div className="flex items-center justify-center mt-6 space-x-2">
-          <button
-            onClick={handlePrevPage}
-            disabled={page <= 1}
-            className="px-2 py-1 border border-gray-600 rounded disabled:opacity-50 sm:px-4 sm:py-2 md:px-5 md:py-2.5"
-          >
-            Précédent
-          </button>
-          <span className="text-sm sm:text-base md:text-lg">
-            Page {currentPage} / {totalPages}
-          </span>
-          <button
-            onClick={handleNextPage}
-            disabled={page >= totalPages}
-            className="px-2 py-1 border border-gray-600 rounded disabled:opacity-50 sm:px-4 sm:py-2 md:px-5 md:py-2.5"
-          >
-            Suivant
-          </button>
+      {isAlbumView ? (
+        // Vue d'album : affichage en masonry de toutes les photos
+        <div className="columns-3 md:columns-3 xl:columns-5 gap-1">
+          {photos.map((photo, index) => (
+            <div
+              key={photo._id}
+              onClick={() => handleOpenModal(index)}
+              className="mb-1 break-inside-avoid relative group cursor-pointer"
+            >
+              <img
+                crossOrigin="anonymous"
+                src={
+                  photo.signedUrl?.startsWith('/')
+                    ? `http://localhost:3000${photo.signedUrl}`
+                    : photo.signedUrl
+                }
+                alt={photo.title}
+                className="w-full h-auto object-cover rounded transition-all duration-300 group-hover:scale-105 group-hover:brightness-110"
+              />
+              {isAuthenticated && isAdmin && (
+                <button
+                  onClick={(e) => handleDeletePhoto(e, photo._id)}
+                  className="absolute top-2 right-2 bg-red-600 text-white px-2 py-1 text-sm rounded opacity-0 group-hover:opacity-100 transition"
+                >
+                  Suppr
+                </button>
+              )}
+            </div>
+          ))}
         </div>
+      ) : (
+        // Vue globale
+        isAdmin ? (
+          // Pour un admin en vue globale, on conserve l'affichage en masonry avec pagination
+          <>
+            <div className="columns-3 md:columns-3 xl:columns-5 gap-1">
+              {photos.map((photo, index) => (
+                <div
+                  key={photo._id}
+                  onClick={() => handleOpenModal(index)}
+                  className="mb-1 break-inside-avoid relative group cursor-pointer"
+                >
+                  <img
+                    crossOrigin="anonymous"
+                    src={
+                      photo.signedUrl?.startsWith('/')
+                        ? `http://localhost:3000${photo.signedUrl}`
+                        : photo.signedUrl
+                    }
+                    alt={photo.title}
+                    className="w-full h-auto object-cover rounded transition-all duration-300 group-hover:scale-105 group-hover:brightness-110"
+                  />
+                  {isAuthenticated && isAdmin && (
+                    <button
+                      onClick={(e) => handleDeletePhoto(e, photo._id)}
+                      className="absolute top-2 right-2 bg-red-600 text-white px-2 py-1 text-sm rounded opacity-0 group-hover:opacity-100 transition"
+                    >
+                      Suppr
+                    </button>
+                  )}
+                </div>
+              ))}
+            </div>
+            <div className="flex items-center justify-center mt-6 space-x-2">
+              <button
+                onClick={handlePrevPage}
+                disabled={page <= 1}
+                className="px-2 py-1 border border-gray-600 rounded disabled:opacity-50 sm:px-4 sm:py-2 md:px-5 md:py-2.5"
+              >
+                Précédent
+              </button>
+              <span className="text-sm sm:text-base md:text-lg">
+                Page {currentPage} / {totalPages}
+              </span>
+              <button
+                onClick={handleNextPage}
+                disabled={page >= totalPages}
+                className="px-2 py-1 border border-gray-600 rounded disabled:opacity-50 sm:px-4 sm:py-2 md:px-5 md:py-2.5"
+              >
+                Suivant
+              </button>
+            </div>
+          </>
+        ) : (
+          // Pour un utilisateur non-admin en vue globale, on affiche un défilement horizontal des dernières photos via react-slick
+          <Slider {...sliderSettings}>
+            {photos.map((photo, index) => (
+              <div
+                key={photo._id}
+                onClick={() => handleOpenModal(index)}
+                className="relative group cursor-pointer p-2"
+              >
+                <img
+                  crossOrigin="anonymous"
+                  src={
+                    photo.signedUrl?.startsWith('/')
+                      ? `http://localhost:3000${photo.signedUrl}`
+                      : photo.signedUrl
+                  }
+                  alt={photo.title}
+                  className="w-full h-auto object-cover rounded transition-all duration-300 group-hover:scale-105 group-hover:brightness-110"
+                />
+              </div>
+            ))}
+          </Slider>
+        )
       )}
 
       {/* Modal de visualisation */}
