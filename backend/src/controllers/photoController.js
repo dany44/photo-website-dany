@@ -6,6 +6,14 @@ const config = require('../config/Config'); // Logs et configurations globales
 const path = require('path');
 const fs = require('fs');
 const bcrypt = require('bcrypt');
+const cloudinary = require('cloudinary').v2;
+
+// Configuration de Cloudinary
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
 // Génère un lien pré-signé pour S3
 const generateSignedUrl = async (key) => {
@@ -17,7 +25,6 @@ const generateSignedUrl = async (key) => {
 };
 
 // Route : Connexion
-
 exports.login = async (req, res, next) => {
     try {
         const { username, password } = req.body;
@@ -37,7 +44,7 @@ exports.login = async (req, res, next) => {
         const isMatch = await bcrypt.compare(password, adminUser.hashedPassword);
         if (!isMatch) {
             config.log('warn', `Tentative de connexion échouée (mot de passe incorrect) : ${username}`);
-            return res.status(401).json({ message: 'Identifiants incorrects.' }); 
+            return res.status(401).json({ message: 'Identifiants incorrects.' });
         }
 
         // Si tout est OK, on génère le token
@@ -91,6 +98,13 @@ exports.uploadPhoto = async (req, res, next) => {
     try {
         const { title, description, albumId } = req.body;
 
+        if (!title || title.trim().length < 3 || title.trim().length > 100) {
+            return res.status(400).json({ message: 'Le titre doit contenir entre 3 et 100 caractères.' });
+        }
+        if (description && description.trim().length > 300) {
+            return res.status(400).json({ message: 'La description ne peut pas dépasser 300 caractères.' });
+        }
+
         if (!req.file) {
             config.log('warn', 'Aucun fichier fourni pour l\'upload.');
             return res.status(400).json({ message: 'Aucun fichier fourni.' });
@@ -107,6 +121,7 @@ exports.uploadPhoto = async (req, res, next) => {
             return res.status(404).json({ message: 'Album non trouvé.' });
         }
         let imagePath;
+        let publicId = null; // Pour Cloudinary
 
         if (config.storageMode === 'aws') {
             // Upload vers S3
@@ -119,6 +134,26 @@ exports.uploadPhoto = async (req, res, next) => {
             };
             await config.s3.send(new PutObjectCommand(params));
             imagePath = `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${fileKey}`;
+        } else if (config.storageMode === 'cloudinary') {
+            // Upload vers Cloudinary
+            const streamUpload = (buffer) => {
+                return new Promise((resolve, reject) => {
+                    const stream = cloudinary.uploader.upload_stream(
+                        { folder: 'photos' },
+                        (error, result) => {
+                            if (result) {
+                                resolve(result);
+                            } else {
+                                reject(error);
+                            }
+                        }
+                    );
+                    stream.end(buffer);
+                });
+            };
+            const result = await streamUpload(req.file.buffer);
+            imagePath = result.secure_url;
+            publicId = result.public_id;
         } else {
             // Enregistrer localement
             const uploadDir = path.join(__dirname, '../uploads/photos');
@@ -128,7 +163,12 @@ exports.uploadPhoto = async (req, res, next) => {
             imagePath = `/uploads/photos/${path.basename(uploadPath)}`;
         }
 
-        const newPhoto = new Photo({ title, description, imagePath });
+        // Créer la photo en incluant le publicId si nécessaire
+        const newPhotoData = { title, description, imagePath, storageMode: config.storageMode };
+        if (config.storageMode === 'cloudinary') {
+            newPhotoData.publicId = publicId;
+        }
+        const newPhoto = new Photo(newPhotoData);
 
         await newPhoto.save();
 
@@ -147,12 +187,14 @@ exports.uploadPhoto = async (req, res, next) => {
 exports.getPhotos = async (req, res, next) => {
     try {
         const page = parseInt(req.query.page) || 1; // Page actuelle (par défaut : 1)
-        const limit = parseInt(req.query.limit) || 25; // Limite d'éléments par page (par défaut : 20)
+        const limit = parseInt(req.query.limit) || 25; // Limite d'éléments par page (par défaut : 25)
         const skip = (page - 1) * limit; // Nombre d'éléments à sauter
 
-        const photos = await Photo.find()
-            .skip(skip) // Sauter les éléments des pages précédentes
-            .limit(limit) // Limiter les résultats à la taille de la page
+        // Ajout du tri par date de création, du plus récent au plus ancien
+        const photos = await Photo.find({ storageMode: config.storageMode })
+            .sort({ createdAt: -1 })
+            .skip(skip)
+            .limit(limit);
 
         const total = await Photo.countDocuments(); // Nombre total de documents
         const totalPages = Math.ceil(total / limit); // Calcul du nombre total de pages
@@ -163,6 +205,8 @@ exports.getPhotos = async (req, res, next) => {
                     const key = photo.imagePath.split('.com/')[1];
                     const signedUrl = await generateSignedUrl(key);
                     return { ...photo.toObject(), signedUrl };
+                } else if (config.storageMode === 'cloudinary') {
+                    return { ...photo.toObject(), signedUrl: photo.imagePath }; // URL Cloudinary
                 } else {
                     return { ...photo.toObject(), signedUrl: photo.imagePath }; // URL locale
                 }
@@ -181,7 +225,6 @@ exports.getPhotos = async (req, res, next) => {
     }
 };
 
-
 // Route : Suppression de photo
 exports.deletePhoto = async (req, res, next) => {
     try {
@@ -195,6 +238,11 @@ exports.deletePhoto = async (req, res, next) => {
         if (config.storageMode === 'aws') {
             const key = new URL(photo.imagePath).pathname.slice(1);
             await config.s3.send(new DeleteObjectCommand({ Bucket: process.env.AWS_BUCKET_NAME, Key: key }));
+        } else if (config.storageMode === 'cloudinary') {
+            // Suppression via Cloudinary en utilisant le publicId stocké
+            if (photo.publicId) {
+                await cloudinary.uploader.destroy(photo.publicId);
+            }
         } else {
             const filePath = path.join(__dirname, '../uploads', path.basename(photo.imagePath));
             if (fs.existsSync(filePath)) {
