@@ -29,26 +29,22 @@
   @apply hidden;
 }
 
-/* Boutons primaires, secondaires, etc. */
+/* Boutons primaires et secondaires remplacés par un design sobre */
 .button-primary {
-  @apply bg-blue-600 text-white px-4 py-2 rounded-md 
-    hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 
-    transition-colors mx-auto block;
+  @apply border border-gray-300 text-gray-300 px-6 py-2 rounded-md transition-colors duration-300 hover:bg-gray-700 hover:border-gray-400 mx-auto block;
 }
 
 .button-secondary {
-  @apply bg-gray-700 text-white px-3 py-2 rounded-md 
-    hover:bg-gray-600 transition-colors;
+  @apply border border-gray-300 text-gray-300 px-6 py-2 rounded-md transition-colors duration-300 hover:bg-gray-700 hover:border-gray-400;
 }
 
+/* Boutons danger et success restent inchangés */
 .button-danger {
-  @apply bg-red-600 text-white px-3 py-2 rounded-md 
-    hover:bg-red-700 transition-colors;
+  @apply bg-red-600 text-white px-3 py-2 rounded-md hover:bg-red-700 transition-colors;
 }
 
 .button-success {
-  @apply bg-green-600 text-white px-3 py-2 rounded-md 
-    hover:bg-green-700 transition-colors;
+  @apply bg-green-600 text-white px-3 py-2 rounded-md hover:bg-green-700 transition-colors;
 }
 
 /* Messages d'alerte ou de succès, si besoin */
