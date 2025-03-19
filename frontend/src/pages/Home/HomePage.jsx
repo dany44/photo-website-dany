@@ -172,6 +172,24 @@ function HomePage() {
         </div>
       </section>
 
+      {/* === Section Blog (Bientôt disponible) dans un encadré gris === */}
+      <section className="bg-gray-800 text-white py-16 px-4 mt-12 shadow-inner">
+        <div className="max-w-6xl mx-auto text-center">
+          <h2 className="text-3xl font-bold mb-4 tracking-tight">NOS DERNIERS ARTICLES DE BLOG</h2>
+          <p className="text-lg mb-4 max-w-3xl mx-auto leading-relaxed">
+            L'histoire derrière chacune de nos photos de voyage...
+          </p>
+          <p className="italic mb-8">(Bientôt disponible)</p>
+          <button
+            type="button"
+            className="border border-gray-300 text-gray-300 px-6 py-2 rounded-md transition-colors duration-300 hover:bg-gray-700 hover:border-gray-400"
+            disabled
+          >
+            Regardez
+          </button>
+        </div>
+      </section>
+
       {/* === Section Photos Récentes centrée === */}
       <section className="mb-8 px-4 mt-12">
         <div className="max-w-6xl mx-auto">
@@ -185,7 +203,7 @@ function HomePage() {
         </div>
       </section>
 
-      {/* === Exemple de footer minimaliste === */}
+      {/* === Footer minimaliste === */}
       <footer className="bg-gray-800 text-gray-300 py-6 mt-12">
         <div className="max-w-6xl mx-auto text-center px-4">
           <p className="text-sm">
