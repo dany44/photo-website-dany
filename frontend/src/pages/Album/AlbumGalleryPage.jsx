@@ -17,7 +17,7 @@ function AlbumGalleryPage() {
   return (
     <div className="p-4 text-white min-h-screen">
       <h2 className="text-2xl font-bold mb-4 text-center">{albumName}</h2>
-      <PhotoGallery albumId={albumId} isAdmin={true} />
+      <PhotoGallery albumId={albumId} isAdmin={false} />
     </div>
   );
 }
