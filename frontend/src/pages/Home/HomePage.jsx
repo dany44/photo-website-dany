@@ -207,7 +207,7 @@ function HomePage() {
       <footer className="bg-gray-800 text-gray-300 py-6 mt-12">
         <div className="max-w-6xl mx-auto text-center px-4">
           <p className="text-sm">
-            © {new Date().getFullYear()} - Dany. Tous droits réservés.
+            © {new Date().getFullYear()} - Dany. All rights reserved.
           </p>
         </div>
       </footer>
