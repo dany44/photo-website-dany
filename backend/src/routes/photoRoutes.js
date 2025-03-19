@@ -7,10 +7,10 @@ const validatePhoto = require('../middlewares/validatePhoto');
 
 const router = express.Router();
 
-// Appliquer le rate limit sur login pour éviter brute force
+//Rate limit sur login pour éviter brute force
 router.post('/login', rateLimit, photoController.login);
 
-// Appliquer le rate limit sur la récupération des photos pour éviter un abus
+//Rate limit sur la récupération des photos pour éviter un abus
 router.get('/', rateLimit, photoController.getPhotos);
 
 // Routes nécessitant authentification
