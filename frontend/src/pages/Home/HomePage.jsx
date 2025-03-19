@@ -110,9 +110,10 @@ function HomePage() {
         <div className="max-w-6xl mx-auto text-center">
           <h2 className="text-4xl font-extrabold mb-6 leading-tight">Bienvenue</h2>
           <p className="text-lg leading-relaxed max-w-3xl mx-auto">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent volutpat nunc at
-            odio sollicitudin, in dictum sapien faucibus. Suspendisse potenti. In hac habitasse
-            platea dictumst. Fusce vel scelerisque sapien.
+          Bonjour, je m'appelle Dany Khadhar. Sur ce site, je présente mes photos de voyage, 
+          réalisées au fil de mes aventures. En tant qu'amateur, je m'attache à documenter 
+          les moments que je trouve intéressants et à offrir un aperçu sincère de mes déplacements. 
+          Merci de prendre le temps de visiter mon univers photographique. Bonne visite !
           </p>
         </div>
       </section>
@@ -123,8 +124,9 @@ function HomePage() {
           <h2 className="text-3xl font-bold mb-4 text-center tracking-tight">Portfolio</h2>
           {/* Section descriptive pour le Portfolio */}
           <p className="text-center text-gray-300 mb-10 max-w-3xl mx-auto leading-relaxed">
-            Découvrez notre sélection d'albums qui capturent des instants uniques et vous invitent
-            à explorer un univers visuel riche et inspirant.
+          Parcourez mes albums regroupant divers moments de mes voyages. 
+          Chaque album rassemble une série d'images prises dans des contextes variés, 
+          illustrant des lieux, des ambiances et des instants simples. 
           </p>
           {/* Grille responsive */}
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
@@ -175,9 +177,9 @@ function HomePage() {
       {/* === Section Blog (Bientôt disponible) dans un encadré gris === */}
       <section className="bg-gray-800 text-white py-16 px-4 mt-12 shadow-inner">
         <div className="max-w-6xl mx-auto text-center">
-          <h2 className="text-3xl font-bold mb-4 tracking-tight">NOS DERNIERS ARTICLES DE BLOG</h2>
+          <h2 className="text-3xl font-bold mb-4 tracking-tight">LES DERNIERS ARTICLES DE BLOG</h2>
           <p className="text-lg mb-4 max-w-3xl mx-auto leading-relaxed">
-            L'histoire derrière chacune de nos photos de voyage...
+            L'histoire derrière chacune de mes photos de voyage...
           </p>
           <p className="italic mb-8">(Bientôt disponible)</p>
           <button
@@ -196,8 +198,7 @@ function HomePage() {
           <h2 className="text-3xl font-bold mb-4 text-center tracking-tight">Dernières photos</h2>
           {/* Section descriptive pour les Dernières photos */}
           <p className="text-center text-gray-300 mb-10 max-w-3xl mx-auto leading-relaxed">
-            Parcourez nos dernières photos pour découvrir les moments capturés récemment, témoignant
-            de notre passion et créativité.
+          Retrouvez une sélection de mes clichés récents, illustrant divers moments de mes voyages. 
           </p>
           <PhotoGallery />
         </div>

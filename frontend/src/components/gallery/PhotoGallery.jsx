@@ -121,35 +121,42 @@ function PhotoGallery({ albumId, isAdmin = false }) {
       {isLoading && <p className="text-white">Chargement...</p>}
       
       {isAlbumView ? (
-        // Vue d'album : affichage en masonry de toutes les photos
-        <div className="columns-3 md:columns-3 xl:columns-5 gap-1">
-          {photos.map((photo, index) => (
-            <div
-              key={photo._id}
-              onClick={() => handleOpenModal(index)}
-              className="mb-1 break-inside-avoid relative group cursor-pointer"
-            >
-              <img
-                crossOrigin="anonymous"
-                src={
-                  photo.signedUrl?.startsWith('/')
-                    ? `http://localhost:3000${photo.signedUrl}`
-                    : photo.signedUrl
-                }
-                alt={photo.title}
-                className="w-full h-auto object-cover rounded transition-all duration-300 group-hover:scale-105 group-hover:brightness-110"
-              />
-              {isAuthenticated && isAdmin && (
-                <button
-                  onClick={(e) => handleDeletePhoto(e, photo._id)}
-                  className="absolute top-2 right-2 bg-red-600 text-white px-2 py-1 text-sm rounded opacity-0 group-hover:opacity-100 transition"
-                >
-                  Suppr
-                </button>
-              )}
-            </div>
-          ))}
-        </div>
+        // Si la vue d'album est active et aucune photo n'est disponible, affiche un message
+        photos.length === 0 ? (
+          <p className="text-white text-center py-6">
+            Aucune photo n'est disponible dans cet album pour le moment.
+          </p>
+        ) : (
+          // Vue d'album : affichage en masonry de toutes les photos
+          <div className="columns-2 md:columns-3 xl:columns-3 gap-1">
+            {photos.map((photo, index) => (
+              <div
+                key={photo._id}
+                onClick={() => handleOpenModal(index)}
+                className="mb-1 break-inside-avoid relative group cursor-pointer"
+              >
+                <img
+                  crossOrigin="anonymous"
+                  src={
+                    photo.signedUrl?.startsWith('/')
+                      ? `${process.env.REACT_APP_API_URL}${photo.signedUrl}`
+                      : photo.signedUrl
+                  }
+                  alt={photo.title}
+                  className="w-full h-auto object-cover rounded transition-all duration-300 group-hover:scale-105 group-hover:brightness-110"
+                />
+                {isAuthenticated && isAdmin && (
+                  <button
+                    onClick={(e) => handleDeletePhoto(e, photo._id)}
+                    className="absolute top-2 right-2 bg-red-600 text-white px-2 py-1 text-sm rounded opacity-0 group-hover:opacity-100 transition"
+                  >
+                    Suppr
+                  </button>
+                )}
+              </div>
+            ))}
+          </div>
+        )
       ) : (
         // Vue globale
         isAdmin ? (
@@ -166,7 +173,7 @@ function PhotoGallery({ albumId, isAdmin = false }) {
                     crossOrigin="anonymous"
                     src={
                       photo.signedUrl?.startsWith('/')
-                        ? `http://localhost:3000${photo.signedUrl}`
+                        ? `${process.env.REACT_APP_API_URL}${photo.signedUrl}`
                         : photo.signedUrl
                     }
                     alt={photo.title}
@@ -216,7 +223,7 @@ function PhotoGallery({ albumId, isAdmin = false }) {
                   crossOrigin="anonymous"
                   src={
                     photo.signedUrl?.startsWith('/')
-                      ? `http://localhost:3000${photo.signedUrl}`
+                      ? `${process.env.REACT_APP_API_URL}${photo.signedUrl}`
                       : photo.signedUrl
                   }
                   alt={photo.title}
@@ -246,7 +253,7 @@ function PhotoGallery({ albumId, isAdmin = false }) {
                 crossOrigin="anonymous"
                 src={
                   selectedPhoto.signedUrl?.startsWith('/')
-                    ? `http://localhost:3000${selectedPhoto.signedUrl}`
+                    ? `${process.env.REACT_APP_API_URL}${selectedPhoto.signedUrl}`
                     : selectedPhoto.signedUrl
                 }
                 alt={selectedPhoto.title}
@@ -278,7 +285,7 @@ function PhotoGallery({ albumId, isAdmin = false }) {
                     crossOrigin="anonymous"
                     src={
                       thumb.signedUrl?.startsWith('/')
-                        ? `http://localhost:3000${thumb.signedUrl}`
+                        ? `${process.env.REACT_APP_API_URL}${thumb.signedUrl}`
                         : thumb.signedUrl
                     }
                     alt={thumb.title}

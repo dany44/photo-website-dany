@@ -3,35 +3,40 @@ import React from 'react';
 
 const AboutPage = () => {
     return (
-        <div className="min-h-screen bg-gray-900 text-gray-100 flex items-center justify-center p-4">
-            <div className="max-w-3xl bg-gray-800 p-8 rounded-lg shadow-lg">
-                <h1 className="text-4xl font-bold mb-4">À Propos de Moi</h1>
-                <div className="flex flex-col md:flex-row items-center mb-6">
-                    <div>
-                        <p className="text-lg mb-2">
-                            Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                            Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                        </p>
-                        <p className="text-lg">
-                            Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-                        </p>
-                    </div>
-                </div>
-                <h2 className="text-2xl font-semibold mb-4">Mon Parcours</h2>
-                <ul className="list-disc list-inside mb-6">
-                    <li>Lorem ipsum dolor sit amet.</li>
-                    <li>Consectetur adipiscing elit.</li>
-                    <li>Sed do eiusmod tempor incididunt.</li>
-                </ul>
-                <h2 className="text-2xl font-semibold mb-4">Ma Mission</h2>
-                <p className="text-lg mb-6">
-                    Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+        <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800 text-gray-100 flex items-center justify-center p-6">
+            <div className="max-w-4xl w-full bg-gray-800 p-10 rounded-xl shadow-2xl border border-gray-700">
+                <h1 className="text-5xl font-extrabold mb-6 text-center tracking-tight">
+                    À Propos de Moi
+                </h1>
+                <p className="text-xl leading-relaxed mb-8">
+                    Je m'appelle Dany Khadhar. Amateur de photographie de voyage, j'ai créé ce site pour partager mes clichés réalisés lors de mes déplacements. Mon approche reste simple et personnelle, centrée sur l'expérience et l'authenticité de chaque moment.
                 </p>
-                <h2 className="text-2xl font-semibold mb-4">Contactez-Moi</h2>
-                <p className="text-lg">
-                    Pour toute demande de collaboration ou pour en savoir plus sur mes travaux, n'hésitez pas à me contacter à l'adresse suivante :
-                    <a href="mailto:danykhadhar@hotmail.fr" className="text-blue-400 underline ml-1">danykhadhar@hotmail.fr</a>
-                </p>
+                <section className="mb-8">
+                    <h2 className="text-3xl font-bold mb-4">Matériel</h2>
+                    <ul className="list-disc list-inside text-lg leading-relaxed space-y-2">
+                        <li>
+                            <strong>Sony a6400</strong> – Un appareil compact et léger, idéal pour mes voyages.
+                        </li>
+                        <li>
+                            <strong>Sony E PZ 16-50mm f/3.5-5.6 OSS</strong> – Un objectif polyvalent, parfait pour les prises de vue en grand-angle au quotidien.
+                        </li>
+                        <li>
+                            <strong>Sigma 56mm f/1.4 DC DN Contemporary</strong> – Un objectif fixe qui me permet de capturer des portraits et de travailler en basse lumière.
+                        </li>
+                        <li>
+                            <strong>Sony FE 70-350mm f/4.5-6.3 G OSS</strong> – Un téléobjectif pratique pour photographier des sujets éloignés lors de mes déplacements.
+                        </li>
+                    </ul>
+                </section>
+                <section>
+                    <h2 className="text-3xl font-bold mb-4">Contact</h2>
+                    <p className="text-lg">
+                        Ce site étant encore en développement, si vous souhaitez me faire part de vos retours, veuillez me contacter à l'adresse suivante :{" "}
+                        <a href="mailto:danykhdr.photo@gmail.com" className="text-blue-400 hover:underline">
+                            danykhdr.photo@gmail.com
+                        </a>
+                    </p>
+                </section>
             </div>
         </div>
     );
