@@ -1,9 +1,11 @@
+// config/Config.js
 const fs = require('fs');
 const winston = require('winston');
 const { S3Client } = require('@aws-sdk/client-s3');
 const mongoose = require('mongoose');
 const path = require('path');
 const jwt = require('jsonwebtoken');
+const cloudinary = require('cloudinary').v2;
 
 class Config {
     constructor() {
@@ -21,7 +23,7 @@ class Config {
         // Initialiser JWT
         this.jwt = jwt;
 
-        // Initialiser S3 (uniquement si mode production)
+        // Initialiser S3 (uniquement si le mode AWS est activé)
         if (this.storageMode === 'aws') {
             this.s3 = new S3Client({
                 region: this.config.AWS_REGION || process.env.AWS_REGION,
@@ -34,6 +36,13 @@ class Config {
 
         // Initialiser MongoDB
         this.mongoURI = this.config.MONGO_URI || process.env.MONGO_URI;
+
+        // Initialiser Cloudinary (centralisé ici)
+        cloudinary.config({
+            cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+            api_key: process.env.CLOUDINARY_API_KEY,
+            api_secret: process.env.CLOUDINARY_API_SECRET,
+        });
     }
 
     // Méthode pour charger un fichier de configuration
@@ -63,7 +72,7 @@ class Config {
             transports: [
                 new winston.transports.Console(),
                 new winston.transports.File({
-                    filename: path.resolve(process.cwd(), 'application.log'), // Met dans la racine du projet
+                    filename: path.resolve(process.cwd(), 'application.log'),
                 }),
             ],
         });
@@ -79,7 +88,7 @@ class Config {
             this.logger.info('MongoDB Connected...');
         } catch (error) {
             this.logger.error(`Erreur de connexion à MongoDB : ${error.message}`);
-            process.exit(1); // Arrêter le serveur en cas d'erreur
+            process.exit(1);
         }
     }
 
@@ -88,7 +97,7 @@ class Config {
         if (this.logger[level]) {
             this.logger[level](message);
         } else {
-            this.logger.info(message); // Par défaut, log en info si le niveau n'est pas trouvé
+            this.logger.info(message);
         }
     }
 }
