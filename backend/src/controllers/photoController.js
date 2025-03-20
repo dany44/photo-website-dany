@@ -48,9 +48,8 @@ exports.login = async (req, res, next) => {
         res.cookie('token', token, {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
-            sameSite: 'strict',
+            sameSite: 'None',
             maxAge: 3600000, // 1h
-            domain: process.env.COOKIE_DOMAIN || undefined,
         });
 
         return res.json({ message: 'Connexion réussie' });
