@@ -18,7 +18,7 @@ export const useAlbums = () => {
   const { data, isLoading, error } = useQuery({
     queryKey: ['albums'],
     queryFn: getAllAlbums,
-    staleTime: 60000, // 1 minute
+    staleTime:  30 * 60 * 1000, // 10 minute
   });
 
   // Mutation pour créer un album

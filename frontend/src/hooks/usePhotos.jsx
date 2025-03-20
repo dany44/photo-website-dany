@@ -13,7 +13,7 @@ export const usePhotos = (page = 1, limit = 10, options = {}) => {
   const query = useQuery({
     queryKey: ['photos', page],
     queryFn: () => getPhotos(page, limit),
-    staleTime: 60000, // 1 minute
+    staleTime:  30 * 60 * 1000, // 10 minute
     ...options,
   });
 
