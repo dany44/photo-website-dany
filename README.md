@@ -11,7 +11,6 @@
 2. [Fonctionnalités 🚀](#-fonctionnalités-)  
 3. [Technologies Utilisées 💻](#-technologies-utilisées-)  
 4. [📌 Architecture du Projet](#-architecture-du-projet-)  
-5. [Conclusion 🏁](#-conclusion-)  
 
 ---
 
