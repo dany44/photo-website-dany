@@ -1,5 +1,4 @@
 // models/Album.js
-
 const mongoose = require('mongoose');
 
 // Définition du schéma pour les albums
@@ -17,7 +16,7 @@ const AlbumSchema = new mongoose.Schema({
         maxlength: [500, 'La description ne peut pas dépasser 500 caractères.'],
     },
     coverPhoto: {
-        type: String, // Chemin de la photo de couverture
+        type: String, // URL de la photo de couverture
         validate: {
             validator: function(v) {
                 // Accepte les URLs (http/https) ou les chemins relatifs locaux
@@ -26,19 +25,27 @@ const AlbumSchema = new mongoose.Schema({
             message: props => `${props.value} n'est pas une URL valide.`,
         },
     },
+    publicId: {
+        type: String,
+        default: null,
+    },
     photos: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Photo',
     }],
+    storageMode: { 
+        type: String, 
+        enum: ['aws', 'cloudinary', 'local'], 
+        required: true 
+    },
     createdAt: {
         type: Date,
         default: Date.now,
     },
 }, {
-    timestamps: true, // Ajoute createdAt et updatedAt automatiquement
-    versionKey: false, // Désactive le champ __v
+    timestamps: true,
+    versionKey: false,
 });
 
-// Export du modèle Album
 const Album = mongoose.model('Album', AlbumSchema);
 module.exports = Album;

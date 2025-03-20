@@ -51,7 +51,11 @@ exports.createAlbum = async (req, res, next) => {
                 const streamUpload = (buffer) => {
                     return new Promise((resolve, reject) => {
                         const stream = cloudinary.uploader.upload_stream(
-                            { folder: 'albums' },
+                            {
+                                folder: 'albums',      // Dossier de stockage
+                                quality: 'auto:good',  // compression automatique avec une qualité "good"
+                                fetch_format: 'auto',   // conversion automatique au format optimal (ex. WebP)
+                            },
                             (error, result) => {
                                 if (result) {
                                     resolve(result);
@@ -81,6 +85,7 @@ exports.createAlbum = async (req, res, next) => {
             description: description ? description.trim() : '',
             coverPhoto: coverPhotoPath,
             publicId: publicId, // Stocker le publicId si upload Cloudinary
+            storageMode: config.storageMode,
         });
 
         await newAlbum.save();
@@ -95,7 +100,7 @@ exports.createAlbum = async (req, res, next) => {
 // Récupérer tous les albums
 exports.getAllAlbums = async (req, res, next) => {
     try {
-        const albums = await Album.find().populate('photos');
+        const albums = await Album.find({ storageMode: config.storageMode }).populate('photos');
 
         // Gérer la coverPhoto selon le mode de stockage
         if (config.storageMode === 'aws') {
@@ -106,7 +111,7 @@ exports.getAllAlbums = async (req, res, next) => {
                     if (splitted.length > 1) {
                         const key = splitted[1];
                         const signedUrl = await generateSignedUrl(key);
-                        album.coverPhoto = signedUrl; 
+                        album.coverPhoto = signedUrl;
                     }
                 }
             }
@@ -163,90 +168,96 @@ exports.getAlbumById = async (req, res, next) => {
 // Mettre à jour un album
 exports.updateAlbum = async (req, res, next) => {
     try {
-        const { name, description } = req.body;
-        const album = await Album.findById(req.params.id);
-
-        if (!album) {
-            config.log('warn', `Album non trouvé pour mise à jour : ${req.params.id}`);
-            return res.status(404).json({ message: 'Album non trouvé.' });
+      const { name, description } = req.body;
+      const album = await Album.findById(req.params.id);
+  
+      if (!album) {
+        config.log('warn', `Album non trouvé pour mise à jour : ${req.params.id}`);
+        return res.status(404).json({ message: 'Album non trouvé.' });
+      }
+  
+      // Validation côté serveur
+      if (name && (name.trim().length < 3 || name.trim().length > 100)) {
+        return res.status(400).json({ message: "Le nom de l'album doit contenir entre 3 et 100 caractères." });
+      }
+      if (description && description.trim().length > 500) {
+        return res.status(400).json({ message: "La description ne peut pas dépasser 500 caractères." });
+      }
+  
+      if (name) album.name = name.trim();
+      if (description) album.description = description.trim();
+  
+      if (req.file) {
+        // Supprimer l'ancienne photo de couverture si elle existe
+        if (album.coverPhoto) {
+          if (config.storageMode === 'aws') {
+            const key = album.coverPhoto.split('.com/')[1];
+            await config.s3.send(new DeleteObjectCommand({ Bucket: process.env.AWS_BUCKET_NAME, Key: key }));
+          } else if (config.storageMode === 'cloudinary') {
+            if (album.publicId) {
+                console.log(album.name, " " , album.publicId);
+              // Supprimer l'ancienne image de Cloudinary
+              await cloudinary.uploader.destroy(album.publicId);
+            }
+          } else {
+            const filePath = path.join(__dirname, '../', album.coverPhoto);
+            if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
+          }
         }
-
-        // Validation côté serveur
-        if (name && (name.trim().length < 3 || name.trim().length > 100)) {
-            return res.status(400).json({ message: "Le nom de l'album doit contenir entre 3 et 100 caractères." });
-        }
-        if (description && description.trim().length > 500) {
-            return res.status(400).json({ message: "La description ne peut pas dépasser 500 caractères." });
-        }
-
-        if (name) album.name = name.trim();
-        if (description) album.description = description.trim();
-
-        if (req.file) {
-            // Supprimer l'ancienne photo de couverture si elle existe
-            if (album.coverPhoto) {
-                if (config.storageMode === 'aws') {
-                    const key = album.coverPhoto.split('.com/')[1];
-                    await config.s3.send(new DeleteObjectCommand({ Bucket: process.env.AWS_BUCKET_NAME, Key: key }));
-                } else if (config.storageMode === 'cloudinary') {
-                    if (album.publicId) {
-                        await cloudinary.uploader.destroy(album.publicId);
-                    }
-                } else {
-                    const filePath = path.join(__dirname, '../', album.coverPhoto);
-                    if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
+  
+        // Télécharger la nouvelle photo de couverture
+        if (config.storageMode === 'aws') {
+          const fileKey = `albums/${Date.now()}-${req.file.originalname}`;
+          const params = {
+            Bucket: process.env.AWS_BUCKET_NAME,
+            Key: fileKey,
+            Body: req.file.buffer,
+            ContentType: req.file.mimetype,
+          };
+          await config.s3.send(new PutObjectCommand(params));
+          album.coverPhoto = `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${fileKey}`;
+          album.publicId = null; // Réinitialiser le publicId
+        } else if (config.storageMode === 'cloudinary') {
+          const streamUpload = (buffer) => {
+            return new Promise((resolve, reject) => {
+              const stream = cloudinary.uploader.upload_stream(
+                {
+                  folder: 'albums',
+                  quality: 'auto:good',  // compression automatique optimisée
+                  fetch_format: 'auto',   // conversion au format optimal (ex. WebP)
+                },
+                (error, result) => {
+                  if (error) {
+                    reject(error);
+                  } else {
+                    resolve(result);
+                  }
                 }
-            }
-
-            // Télécharger la nouvelle photo de couverture
-            if (config.storageMode === 'aws') {
-                const fileKey = `albums/${Date.now()}-${req.file.originalname}`;
-                const params = {
-                    Bucket: process.env.AWS_BUCKET_NAME,
-                    Key: fileKey,
-                    Body: req.file.buffer,
-                    ContentType: req.file.mimetype,
-                };
-                await config.s3.send(new PutObjectCommand(params));
-                album.coverPhoto = `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${fileKey}`;
-                album.publicId = null; // Réinitialiser le publicId
-            } else if (config.storageMode === 'cloudinary') {
-                const streamUpload = (buffer) => {
-                    return new Promise((resolve, reject) => {
-                        const stream = cloudinary.uploader.upload_stream(
-                            { folder: 'albums' },
-                            (error, result) => {
-                                if (result) {
-                                    resolve(result);
-                                } else {
-                                    reject(error);
-                                }
-                            }
-                        );
-                        stream.end(buffer);
-                    });
-                };
-                const result = await streamUpload(req.file.buffer);
-                album.coverPhoto = result.secure_url;
-                album.publicId = result.public_id;
-            } else {
-                const uploadDir = path.join(__dirname, '../uploads/albums');
-                if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
-                const uploadPath = path.join(uploadDir, `${Date.now()}-${req.file.originalname}`);
-                fs.writeFileSync(uploadPath, req.file.buffer);
-                album.coverPhoto = `/uploads/albums/${path.basename(uploadPath)}`;
-            }
+              );
+              stream.end(buffer);
+            });
+          };
+          const result = await streamUpload(req.file.buffer);
+          album.coverPhoto = result.secure_url;
+          album.publicId = result.public_id;
+        } else {
+          const uploadDir = path.join(__dirname, '../uploads/albums');
+          if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
+          const uploadPath = path.join(uploadDir, `${Date.now()}-${req.file.originalname}`);
+          fs.writeFileSync(uploadPath, req.file.buffer);
+          album.coverPhoto = `/uploads/albums/${path.basename(uploadPath)}`;
         }
-
-        await album.save();
-
-        config.log('info', `Album mis à jour : ${album.name}`);
-        res.status(200).json({ message: 'Album mis à jour avec succès.', album });
+      }
+  
+      await album.save();
+  
+      config.log('info', `Album mis à jour : ${album.name}`);
+      res.status(200).json({ message: 'Album mis à jour avec succès.', album });
     } catch (error) {
-        next(error);
+      next(error);
     }
-};
-
+  };
+  
 // Supprimer un album
 exports.deleteAlbum = async (req, res, next) => {
     try {
