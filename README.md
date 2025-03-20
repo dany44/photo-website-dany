@@ -1,111 +1,108 @@
-# Photo Gallery - Projet Full Stack (Backend & Frontend)
+# 📸 Photo Gallery - Projet Full Stack  
 
-## **📌 Introduction**
-Bienvenue sur **Photo Gallery**, une application complète permettant de gérer et afficher des albums photos.
-Ce projet est une **solution Full Stack** développée en **Node.js (backend) et React (frontend)** avec une infrastructure prête pour le déploiement sur Kubernetes.
+**Photo Gallery** est une application complète de gestion et d'affichage d'albums photos, conçue pour exposer mes clichés de voyage de manière simple et authentique. Ce projet Full Stack intègre un **backend en Node.js/Express** et un **frontend en React**, déployé sur **Railway (backend)** et **Netlify (frontend)**, avec **MongoDB Atlas** pour la base de données.  
 
-🔹 **Backend** : API REST avec **Express, MongoDB, JWT, AWS S3** (optionnel) 📦  
-🔹 **Frontend** : Interface utilisateur avec **React, React Router, Tailwind CSS** 🎨  
-🔹 **Déploiement** : Conteneurisé avec **Docker**, orchestré avec **Kubernetes (EKS)** et optimisé pour **CI/CD**.  
+> **Note :** L'utilisation de solutions de stockage comme **Cloudinary** ou **AWS S3** est optionnelle (configurable via la variable `STORAGE_MODE`). Des **liens signés** sont générés (pour AWS) afin de faciliter une transition si nécessaire.  
 
 ---
 
-## **📌 Fonctionnalités**
-
-### 🔹 **Backend (API REST)**
-✅ Gestion des albums : Création, modification, suppression 📂  
-✅ Gestion des photos : Upload, suppression, génération de liens sécurisés 🔗  
-✅ Authentification sécurisée avec **JWT** 🔑  
-✅ Stockage flexible **Local / AWS S3** ☁️  
-✅ Logs centralisés et sécurisés 📊  
-✅ Pagination et sécurisation des requêtes 🔄  
-
-### 🔹 **Frontend (React)**
-✅ Galerie photo avec affichage dynamique 🎨  
-✅ Upload de photos et gestion des albums 🖼️  
-✅ Connexion admin et gestion des droits 🔐  
-✅ Responsive & Dark Mode 🌙  
+## 📑 Table des Matières  
+1. [Introduction 👋](#-introduction-)  
+2. [Fonctionnalités 🚀](#-fonctionnalités-)  
+3. [Technologies Utilisées 💻](#-technologies-utilisées-)  
+4. [📌 Architecture du Projet](#-architecture-du-projet-)  
+5. [Conclusion 🏁](#-conclusion-)  
 
 ---
 
-## **📌 Technologies Utilisées**
-
-### **Backend** 🖥️
-- **Node.js** avec **Express.js** 🚀
-- **MongoDB** avec **Mongoose** 🗄️
-- **AWS S3** pour le stockage des photos ☁️
-- **Winston** pour la gestion des logs 📜
-- **Multer** pour l'upload de fichiers 📂
-- **JWT** pour l'authentification 🔐
-
-### **Frontend** 🎨
-- **React** avec **React Router** 🔄
-- **Axios** pour les appels API 📡
-- **Tailwind CSS** pour le style 💅
-- **React Context API** pour la gestion globale ⚡
-
-### **DevOps & Déploiement** ⚙️
-- **Docker & Kubernetes (EKS)** ☸️
-- **GitHub Actions (CI/CD)** 🔄
-- **Terraform** pour provisionner l'infrastructure ☁️
+## 👋 Introduction  
+**Photo Gallery** est une application **Full Stack** qui me permet de gérer et d'afficher mes albums photos. J'ai conçu ce projet pour :  
+✅ Présenter mes photos de voyage.  
+✅ Disposer d'un **espace administrateur sécurisé** pour gérer le contenu.  
 
 ---
 
-## **📌 Architecture du Projet**
+## 🚀 Fonctionnalités  
+
+### 📂 Backend (API REST)  
+- **Gestion des albums** : Création, modification, suppression et association de photos.  
+- **Gestion des photos** : Upload, suppression, mise à jour et génération de liens sécurisés.  
+- **Authentification sécurisée** : JWT & cookies pour l'accès aux routes protégées.  
+- **Stockage flexible** : Local, AWS S3 ou Cloudinary (via `STORAGE_MODE`).  
+- **Logs centralisés** : Winston avec rotation quotidienne pour un suivi fiable.  
+
+### 🎨 Frontend (React)  
+- **Galerie dynamique** : Mode **masonry** et **carrousel**.  
+- **Upload de photos** : Interface intuitive.  
+- **Espace admin** : Connexion sécurisée, gestion des albums et photos.  
+- **Responsive & Dark Mode** : UI moderne avec Tailwind CSS.  
+- **Gestion d'état** : React Context & React Query (cache persistant).  
+
+---
+
+## 💻 Technologies Utilisées  
+
+### 🖥️ Backend  
+- **Node.js + Express.js**  
+- **MongoDB Atlas (Mongoose)**  
+- **JWT + Cookies** (authentification)  
+- **Cloudinary / AWS S3** (upload & stockage d'images)  
+- **Winston + Daily Rotate File** (logs)  
+- **Multer** (upload fichiers)  
+- **Sécurité** : Helmet, express-mongo-sanitize, Rate Limiting  
+
+### 🌐 Frontend  
+- **React + React Router**  
+- **Axios** (requêtes API)  
+- **Tailwind CSS** (UI)  
+- **React Context & React Query** (@tanstack/react-query-persist-client)  
+
+---
+
+## 📌 Architecture du Projet  
 
 ```
 photo-gallery/
-├── backend/                  # API Node.js (Express, MongoDB)
+├── backend/                  # API Node.js (Express, MongoDB Atlas)
 │   ├── src/
-│   │   ├── config/           # Configuration et logs
-│   │   ├── controllers/      # Logique métier
-│   │   ├── middlewares/      # Authentification, validation
-│   │   ├── models/           # Modèles de données MongoDB
-│   │   ├── routes/           # Définition des endpoints API
-│   │   ├── uploads/          # Stockage local des images
+│   │   ├── config/           # Configuration, logs & variables d'environnement
+│   │   ├── controllers/      # Logique métier (albums, photos, auth)
+│   │   ├── middlewares/      # Auth, validation, rate limiting, etc.
+│   │   ├── models/           # Schémas de données (Album, Photo)
+│   │   ├── routes/           # Endpoints de l'API
+│   │   ├── uploads/          # Stockage local des images (si utilisé)
 │   │   ├── app.js            # Point d'entrée Express
-│   │   └── server.js         # Serveur HTTP
-│   ├── .env.example          # Variables d'environnement
-│   ├── package.json          # Dépendances du backend
+│   │   └── server.js         # Démarrage du serveur HTTP
+│   ├── .env.example          # Exemple de config
+│   ├── package.json          # Dépendances backend
 │   ├── Dockerfile            # Conteneurisation backend
-│   ├── README.md             # Documentation backend
-│   ├── tests/                # Tests unitaires
-│   ├── application.log       # Fichier de logs
-│   ├── terraform/            # Infrastructure as Code (AWS, Kubernetes)
+│   ├── tests/                # Tests unitaires & intégration
+│   ├── logs/                 # Fichiers de logs rotatifs
 │
-├── frontend/                 # Interface utilisateur React
+├── frontend/                 # Interface React
 │   ├── src/
-│   │   ├── api/              # Gestion des appels API
-│   │   ├── components/       # Composants React
-│   │   ├── context/          # Gestion de l'état global
-│   │   ├── pages/            # Pages principales
-│   │   ├── routes/           # Configuration React Router
+│   │   ├── api/              # Appels API (auth, albums, photos)
+│   │   ├── components/       # Composants réutilisables
+│   │   ├── context/          # Gestion d'état global (AuthContext)
+│   │   ├── hooks/            # Hooks personnalisés
+│   │   ├── pages/            # Pages principales (Home, Admin, About, Login)
+│   │   ├── routes/           # React Router
 │   │   ├── App.jsx           # Point d'entrée React
-│   │   ├── index.js          # Initialisation React
+│   │   ├── index.js          # Initialisation & persistance cache
 │   │   ├── index.css         # Styles globaux
-│   ├── .env.example          # Variables d'environnement
-│   ├── package.json          # Dépendances du frontend
+│   ├── .env.example          # Exemple de config frontend
+│   ├── package.json          # Dépendances frontend
 │   ├── Dockerfile            # Conteneurisation frontend
-│   ├── public/               # Fichiers statiques
+│   ├── public/               # Assets statiques
 │   ├── README.md             # Documentation frontend
-│   ├── vite.config.js        # Configuration Vite.js
+│   ├── vite.config.js        # Config Vite.js
 │
 ├── .github/workflows/        # Pipelines CI/CD
-│   ├── backend-ci.yml        # CI/CD Backend
-│   ├── frontend-ci.yml       # CI/CD Frontend
-│   ├── deploy.yml            # Déploiement Kubernetes (EKS)
+│   ├── backend-ci.yml        # CI/CD backend
+│   ├── frontend-ci.yml       # CI/CD frontend
+│   └── deploy.yml            # Déploiement Railway & Netlify
 │
-├── .gitignore                # Ignorer les fichiers sensibles
+├── .gitignore                # Ignore fichiers sensibles (.env, logs, etc.)
 ├── README.md                 # Documentation globale
-├── kubernetes/               # Fichiers de configuration Kubernetes (manifests YAML)
-├── terraform/                # Infrastructure Cloud (AWS, Kubernetes)
 └── package.json              # Dépendances globales (si monorepo)
 ```
-
----
-
-## **📌 CI/CD & Déploiement**
-- **GitHub Actions** : Tests, builds et déploiement automatisé 🚀  
-- **Docker** : Conteneurisation complète 🐳  
-- **Kubernetes (EKS)** : Déploiement scalable ☸️  
-- **Terraform** : Provisionnement AWS (EKS, S3, RDS) ☁️  
