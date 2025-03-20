@@ -5,14 +5,12 @@ function LoginForm({ onSubmit, error }) {
   const [password, setPassword] = useState('');
   // États pour le message de validation côté client
   const [formMessage, setFormMessage] = useState('');
-  const [formMessageType, setFormMessageType] = useState(''); // "error" ou "success"
-
+$
   const handleSubmit = (e) => {
     e.preventDefault();
     // Validation côté client personnalisée
     if (!username || !password) {
       setFormMessage('Veuillez remplir tous les champs.');
-      setFormMessageType('error');
       return;
     }
     // On efface le message s'il y en a et on déclenche la fonction onSubmit passée en prop
