@@ -5,7 +5,6 @@ function LoginForm({ onSubmit, error }) {
   const [password, setPassword] = useState('');
   // États pour le message de validation côté client
   const [formMessage, setFormMessage] = useState('');
-$
   const handleSubmit = (e) => {
     e.preventDefault();
     // Validation côté client personnalisée
