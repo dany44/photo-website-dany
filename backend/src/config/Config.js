@@ -1,7 +1,7 @@
 // config/Config.js
 const fs = require('fs');
 const winston = require('winston');
-require('winston-daily-rotate-file'); // Nécessaire pour la rotation des fichiers
+require('winston-daily-rotate-file'); 
 const { S3Client } = require('@aws-sdk/client-s3');
 const mongoose = require('mongoose');
 const path = require('path');
@@ -68,7 +68,7 @@ class Config {
             datePattern: 'YYYY-MM-DD',
             zippedArchive: true,
             maxSize: '20m',
-            maxFiles: '14d', // Conserver les logs des 14 derniers jours
+            maxFiles: '7d', // Conserver les logs des 7 derniers jours
         });
 
         return winston.createLogger({
