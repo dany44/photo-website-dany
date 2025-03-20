@@ -23,18 +23,23 @@ const allowedOrigins = process.env.FRONTEND_URL
 console.log("🚀 FRONTEND_URL chargé sur Railway :", process.env.FRONTEND_URL);
 
 app.use(cors({
-  origin: function (origin, callback) {
-    // En production, on rejette les requêtes sans origine
+  origin: function(origin, callback) {
+    console.log("🌍 Origin détectée :", origin); // 🔍 DEBUG
+
     if (!origin) {
       if (process.env.NODE_ENV === 'production') {
+        console.log("❌ Requête refusée car sans origine");
         return callback(new Error('Origin not allowed by CORS'), false);
       }
-      // En développement, on autorise même sans origine (utile pour Postman, etc.)
+      console.log("✅ Requête sans origine autorisée (DEV ou Postman)");
       return callback(null, true);
     }
+
     if (allowedOrigins.includes(origin)) {
+      console.log("✅ Origin autorisée :", origin);
       return callback(null, origin);
     } else {
+      console.log("❌ Origin refusée :", origin);
       return callback(new Error('Origin not allowed by CORS'), false);
     }
   },
