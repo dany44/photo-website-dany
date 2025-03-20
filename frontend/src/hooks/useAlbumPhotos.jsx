@@ -11,6 +11,6 @@ export const useAlbumPhotos = (albumId) => {
     queryKey: ['album', albumId],
     queryFn: () => getAlbumById(albumId),
     enabled: Boolean(albumId),
-    staleTime: 60000, // 1 minute
+    staleTime:  30 * 60 * 1000, // 10 minute
   });
 };
