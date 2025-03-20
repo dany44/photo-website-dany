@@ -133,7 +133,11 @@ exports.uploadPhoto = async (req, res, next) => {
             const streamUpload = (buffer) => {
                 return new Promise((resolve, reject) => {
                     const stream = cloudinary.uploader.upload_stream(
-                        { folder: 'photos' },
+                        {
+                            folder: 'photos',
+                            quality: 'auto:good',  // compression automatique avec une qualité "good"
+                            fetch_format: 'auto',   // conversion automatique au format optimal (ex. WebP)
+                        },
                         (error, result) => {
                             if (result) {
                                 resolve(result);

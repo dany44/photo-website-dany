@@ -15,22 +15,30 @@ const app = express();
 // Initialiser la base de données
 config.connectDB();
 
-// Configurer CORS
-
-const allowedOrigins = ['http://localhost:3001', 'http://192.168.1.84:3001'];
+// Middleware pour autoriser les requêtes CORS
+const allowedOrigins = process.env.FRONTEND_URL 
+  ? process.env.FRONTEND_URL.split(',')
+  : ['http://localhost:3001'];
 
 app.use(cors({
   origin: function(origin, callback) {
-    // Permet les requêtes sans origine (ex. Postman)
-    if (!origin) return callback(null, true);
-    if (allowedOrigins.indexOf(origin) !== -1) {
-      callback(null, origin);
+    // En production, on rejette les requêtes sans origine
+    if (!origin) {
+      if (process.env.NODE_ENV === 'production') {
+        return callback(new Error('Origin not allowed by CORS'), false);
+      }
+      // En développement, on autorise même sans origine (utile pour Postman, etc.)
+      return callback(null, true);
+    }
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, origin);
     } else {
-      callback(new Error('Origin not allowed by CORS'));
+      return callback(new Error('Origin not allowed by CORS'), false);
     }
   },
-  credentials: true, // Autorise l'envoi des credentials
+  credentials: true,
 }));
+
 
 app.use(compression()); // Active la compression pour toutes les réponses
 
