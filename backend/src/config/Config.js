@@ -1,6 +1,7 @@
 // config/Config.js
 const fs = require('fs');
 const winston = require('winston');
+require('winston-daily-rotate-file'); // Nécessaire pour la rotation des fichiers
 const { S3Client } = require('@aws-sdk/client-s3');
 const mongoose = require('mongoose');
 const path = require('path');
@@ -59,8 +60,17 @@ class Config {
         }
     }
 
-    // Méthode pour initialiser le logger
+    // Méthode pour initialiser le logger avec rotation des logs
     initializeLogger() {
+        const dailyRotateTransport = new winston.transports.DailyRotateFile({
+            filename: 'application-%DATE%.log',
+            dirname: path.resolve(process.cwd(), 'logs'),
+            datePattern: 'YYYY-MM-DD',
+            zippedArchive: true,
+            maxSize: '20m',
+            maxFiles: '14d', // Conserver les logs des 14 derniers jours
+        });
+
         return winston.createLogger({
             level: this.logLevel,
             format: winston.format.combine(
@@ -71,9 +81,7 @@ class Config {
             ),
             transports: [
                 new winston.transports.Console(),
-                new winston.transports.File({
-                    filename: path.resolve(process.cwd(), 'application.log'),
-                }),
+                dailyRotateTransport,
             ],
         });
     }
