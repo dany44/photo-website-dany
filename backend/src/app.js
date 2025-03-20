@@ -24,6 +24,7 @@ console.log("🚀 FRONTEND_URL chargé sur Railway :", process.env.FRONTEND_URL)
 
 app.use(cors({
   origin: function(origin, callback) {
+    console.log("✅ Liste des origins autorisées :", allowedOrigins);
     console.log("🌍 Origin détectée :", origin); // 🔍 DEBUG
 
     if (!origin) {
