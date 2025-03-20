@@ -50,6 +50,7 @@ exports.login = async (req, res, next) => {
             secure: process.env.NODE_ENV === 'production',
             sameSite: 'strict',
             maxAge: 3600000, // 1h
+            domain: process.env.COOKIE_DOMAIN || undefined,
         });
 
         return res.json({ message: 'Connexion réussie' });

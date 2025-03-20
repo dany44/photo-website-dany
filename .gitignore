@@ -40,3 +40,4 @@ backend/.env
 # Fichiers générés
 backend/uploads/
 backend/application.log
+backend/logs/
