@@ -1,5 +1,4 @@
-// src/components/gallery/PhotoGallery.jsx
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import Slider from "react-slick";
 import { AuthContext } from '../../context/AuthContext';
 import { usePhotos } from '../../hooks/usePhotos';
@@ -11,16 +10,14 @@ function PhotoGallery({ albumId, isAdmin = false }) {
   // Pour la vue globale (non album), on utilise une state pour la page
   const [page, setPage] = useState(1);
 
-  // Appel inconditionnel des deux hooks.
-  // useAlbumPhotos : récupère les données de l'album si albumId est défini (enabled gère l'exécution).
+  // Hooks pour récupérer les photos
   const albumQuery = useAlbumPhotos(albumId);
-  // usePhotos : n'est activé que si aucun albumId n'est passé.
   const photosQuery = usePhotos(page, 10, { enabled: !albumId });
 
   // Déterminer la vue à utiliser : album spécifique ou globale.
   const isAlbumView = Boolean(albumId);
 
-  // Pour la vue album, on extrait les photos depuis albumQuery, sinon on prend les données de photosQuery.
+  // Extraction des données
   const {
     photos,
     currentPage,
@@ -47,31 +44,44 @@ function PhotoGallery({ albumId, isAdmin = false }) {
         deletePhoto: photosQuery.deletePhoto,
       };
 
-  // State et refs pour le modal et les miniatures.
+  // Modal & miniatures
   const [selectedIndex, setSelectedIndex] = useState(null);
   const scrollContainerRef = useRef(null);
   const thumbnailRefs = useRef([]);
   const selectedPhoto = selectedIndex !== null ? photos[selectedIndex] : null;
 
-  // Définition des paramètres du slider pour la vue non-admin
+  // Ref pour le slider
+  const sliderRef = useRef(null);
+
+  // Forcer la position du slider après chargement/MAJ des photos
+  useEffect(() => {
+    if (sliderRef.current && photos.length > 0) {
+      // Laisser un léger délai pour que la mise en page soit stabilisée
+      setTimeout(() => {
+        sliderRef.current.slickGoTo(0);
+      }, 50);
+    }
+  }, [photos]);
+
+  // Configuration du slider : on évite d'afficher plus de slides que le nombre de photos
   const sliderSettings = {
     dots: false,
     infinite: false,
     speed: 500,
-    slidesToShow: 5,
+    slidesToShow: Math.min(photos.length, 5),
     slidesToScroll: 1,
     responsive: [
       {
         breakpoint: 1024,
         settings: {
-          slidesToShow: 3,
+          slidesToShow: Math.min(photos.length, 3),
           slidesToScroll: 1,
         },
       },
       {
         breakpoint: 600,
         settings: {
-          slidesToShow: 2,
+          slidesToShow: Math.min(photos.length, 2),
           slidesToScroll: 1,
         },
       },
@@ -85,10 +95,11 @@ function PhotoGallery({ albumId, isAdmin = false }) {
     ],
   };
 
-  // Fonctions de gestion du modal et du défilement des miniatures.
+  // Gestion de l'ouverture/fermeture du modal
   const handleOpenModal = (index) => setSelectedIndex(index);
   const handleCloseModal = () => setSelectedIndex(null);
 
+  // Scroll horizontal dans le ruban de miniatures
   const handleThumbnailClick = (idx) => {
     setSelectedIndex(idx);
     if (!scrollContainerRef.current || !thumbnailRefs.current[idx]) return;
@@ -101,16 +112,16 @@ function PhotoGallery({ albumId, isAdmin = false }) {
     container.scrollTo({ left: scrollPosition, behavior: 'smooth' });
   };
 
+  // Suppression de photo (admin)
   const handleDeletePhoto = (e, id) => {
     e.stopPropagation();
     deletePhoto(id);
   };
 
-  // Gestion de la pagination pour la vue globale admin
+  // Pagination (admin)
   const handlePrevPage = () => {
     if (page > 1) setPage(page - 1);
   };
-
   const handleNextPage = () => {
     if (page < totalPages) setPage(page + 1);
   };
@@ -119,21 +130,20 @@ function PhotoGallery({ albumId, isAdmin = false }) {
     <div className="p-0">
       {error && <p className="text-red-400 mb-4">{error.message}</p>}
       {isLoading && <p className="text-white">Chargement...</p>}
-      
+
       {isAlbumView ? (
-        // Si la vue d'album est active et aucune photo n'est disponible, affiche un message
+        // Affichage d'un album spécifique
         photos.length === 0 ? (
           <p className="text-white text-center py-6">
             Aucune photo n'est disponible dans cet album pour le moment.
           </p>
         ) : (
-          // Vue d'album : affichage en masonry de toutes les photos
-          <div className="columns-2 md:columns-3 xl:columns-3 gap-1">
+          <div className="columns-2 md:columns-3 xl:columns-3 gap-2">
             {photos.map((photo, index) => (
               <div
                 key={photo._id}
                 onClick={() => handleOpenModal(index)}
-                className="mb-1 break-inside-avoid relative group cursor-pointer"
+                className="mb-2 break-inside-avoid relative group cursor-pointer"
               >
                 <img
                   crossOrigin="anonymous"
@@ -143,7 +153,7 @@ function PhotoGallery({ albumId, isAdmin = false }) {
                       : photo.signedUrl
                   }
                   alt={photo.title}
-                  className="w-full h-auto object-cover rounded transition-all duration-300 group-hover:scale-105 group-hover:brightness-110"
+                  className="w-full h-auto object-cover rounded transition-all duration-300 group-hover:scale-102 group-hover:brightness-110"
                 />
                 {isAuthenticated && isAdmin && (
                   <button
@@ -160,14 +170,14 @@ function PhotoGallery({ albumId, isAdmin = false }) {
       ) : (
         // Vue globale
         isAdmin ? (
-          // Pour un admin en vue globale, on conserve l'affichage en masonry avec pagination
+          // Pour un admin, affichage en masonry + pagination
           <>
-            <div className="columns-3 md:columns-3 xl:columns-5 gap-1">
+            <div className="columns-3 md:columns-3 xl:columns-5 gap-2">
               {photos.map((photo, index) => (
                 <div
                   key={photo._id}
                   onClick={() => handleOpenModal(index)}
-                  className="mb-1 break-inside-avoid relative group cursor-pointer"
+                  className="mb-2 break-inside-avoid relative group cursor-pointer"
                 >
                   <img
                     crossOrigin="anonymous"
@@ -177,7 +187,7 @@ function PhotoGallery({ albumId, isAdmin = false }) {
                         : photo.signedUrl
                     }
                     alt={photo.title}
-                    className="w-full h-auto object-cover rounded transition-all duration-300 group-hover:scale-105 group-hover:brightness-110"
+                    className="w-full h-auto object-cover rounded transition-all duration-300 group-hover:scale-102 group-hover:brightness-110"
                   />
                   {isAuthenticated && isAdmin && (
                     <button
@@ -211,8 +221,8 @@ function PhotoGallery({ albumId, isAdmin = false }) {
             </div>
           </>
         ) : (
-          // Pour un utilisateur non-admin en vue globale, on affiche un défilement horizontal des dernières photos via react-slick
-          <Slider {...sliderSettings}>
+          // Pour un utilisateur non-admin, slider horizontal avec react-slick
+          <Slider ref={sliderRef} {...sliderSettings}>
             {photos.map((photo, index) => (
               <div
                 key={photo._id}
@@ -227,7 +237,7 @@ function PhotoGallery({ albumId, isAdmin = false }) {
                       : photo.signedUrl
                   }
                   alt={photo.title}
-                  className="w-full h-auto object-cover rounded transition-all duration-300 group-hover:scale-105 group-hover:brightness-110"
+                  className="w-full h-auto object-cover rounded transition-all duration-300 group-hover:scale-102 group-hover:brightness-110"
                 />
               </div>
             ))}
@@ -264,7 +274,7 @@ function PhotoGallery({ albumId, isAdmin = false }) {
               <h3 className="text-lg font-bold mb-1">{selectedPhoto.title}</h3>
               <p className="text-sm text-gray-300">{selectedPhoto.description}</p>
             </div>
-            {/* Ruban de miniatures */}
+            {/* Ruban de miniatures en bas du modal */}
             <div
               ref={scrollContainerRef}
               className="absolute bottom-0 left-0 right-0 h-16 sm:h-20 md:h-24 bg-black bg-opacity-90 flex items-center px-2 overflow-x-auto whitespace-nowrap"

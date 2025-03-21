@@ -40,6 +40,7 @@ app.use(cors({
 }));
 
 
+
 app.use(compression()); // Active la compression pour toutes les réponses
 
 app.use(helmet());
