@@ -6,6 +6,9 @@ module.exports = {
   ],
   theme: {
     extend: {
+      scale: {
+        '102': '1.02',
+      },
       fontFamily: {
         sans: ['Poppins', 'sans-serif'],
         signature: ["Great Vibes", "cursive"],
