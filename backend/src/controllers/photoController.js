@@ -48,7 +48,7 @@ exports.login = async (req, res, next) => {
         res.cookie('token', token, {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
-            sameSite: 'None',
+            sameSite: 'strict',
             maxAge: 3600000, // 1h
         });
 
@@ -81,7 +81,7 @@ exports.protectedRoute = (req, res, next) => {
             message: 'Accès autorisé à la route protégée.',
             user: req.user, // Contient les informations décodées du token
         });
-        config.log('info', `Accès à la route protégée par l'utilisateur : ${req.user.username}`);
+        config.log('debug', `Accès à la route protégée par l'utilisateur : ${req.user.username}`);
     } catch (error) {
         next(error);
     }

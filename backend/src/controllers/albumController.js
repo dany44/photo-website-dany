@@ -158,7 +158,7 @@ exports.getAlbumById = async (req, res, next) => {
                 signedUrl: photo.imagePath
             }));
             res.status(200).json({ album: { ...album.toObject(), photos: photosWithUrls } });
-            config.log('info', `Toutes les photos de l'album ${req.params.id} ont été récupérées.`);
+            config.log('info', `Toutes les photos de l'album ${album.name} ont été récupérées.`);
         }
     } catch (error) {
         next(error);

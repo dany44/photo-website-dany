@@ -16,7 +16,7 @@ router.get('/', rateLimit, photoController.getPhotos);
 // Routes nécessitant authentification
 router.post('/logout', authenticate('post /logout (photos)'), photoController.logout); 
 router.post('/upload', authenticate('post /upload (photos)'), authorize('admin'), upload.single('image'), validatePhoto, handleUploadError, photoController.uploadPhoto);
-router.get('/protected', authenticate('get /protected (photos)'), photoController.protectedRoute); 
+router.get('/protected', authenticate(''), photoController.protectedRoute);
 
 // Routes nécessitant authentification et autorisation admin
 router.delete('/:id', authenticate('delete /:id (photos)'), authorize('admin'), photoController.deletePhoto);
