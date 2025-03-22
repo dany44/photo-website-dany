@@ -176,7 +176,7 @@ function PhotoGallery({ albumId, isAdmin = false }) {
               <div
                 key={photo._id}
                 onClick={() => handleOpenModal(index)}
-                className="mb-2 break-inside-avoid relative group cursor-pointer" 
+                className="mb-2 break-inside-avoid relative group cursor-pointer"
               >
                 <img
                   crossOrigin="anonymous"
@@ -303,10 +303,13 @@ function PhotoGallery({ albumId, isAdmin = false }) {
                 className="object-contain w-full h-full"
               />
             </div>
-            <div className="absolute top-[75%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80vw] text-white text-center sm:top-[85%] sm:left-1/2 sm:text-center md:top-1/2 md:left-auto md:right-40 md:translate-x-0 md:w-48 md:text-left">
+            <div className="absolute top-[78%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80vw] text-white text-center 
+                  sm:top-[78%] sm:left-1/2 sm:text-center 
+                  md:top-1/2 md:left-auto md:right-0 md:translate-x-0 md:w-48 md:text-left">
               <h3 className="text-lg font-bold mb-1">{selectedPhoto.title}</h3>
               <p className="text-sm text-gray-300">{selectedPhoto.description}</p>
             </div>
+
             {/* Ruban de miniatures en bas du modal */}
             <div
               ref={scrollContainerRef}
