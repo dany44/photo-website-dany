@@ -39,6 +39,7 @@ app.use(cors({
   credentials: true,
 }));
 
+app.set('trust proxy', true);
 
 
 app.use(compression()); // Active la compression pour toutes les réponses
