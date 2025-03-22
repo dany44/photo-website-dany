@@ -12,11 +12,10 @@ function AddPhotoForm() {
   const [preview, setPreview] = useState(null);
   const [selectedAlbum, setSelectedAlbum] = useState('');
   const [message, setMessage] = useState('');
-  const [messageType, setMessageType] = useState(''); // "success" ou "error"
+  const [messageType, setMessageType] = useState(''); 
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    // Avec React Query, useAlbums s'occupe du fetch, pas besoin de fetchAlbums ici.
   }, []);
 
   const handleImageChange = (e) => {
