@@ -180,6 +180,8 @@ function PhotoGallery({ albumId, isAdmin = false }) {
               >
                 <img
                   crossOrigin="anonymous"
+                  draggable={false}
+                  onContextMenu={(e) => e.preventDefault()}
                   src={
                     photo.signedUrl?.startsWith('/')
                       ? `${process.env.REACT_APP_API_URL}${photo.signedUrl}`
@@ -213,6 +215,8 @@ function PhotoGallery({ albumId, isAdmin = false }) {
                   className="mb-2 break-inside-avoid relative group cursor-pointer"
                 >
                   <img
+                    draggable={false}
+                    onContextMenu={(e) => e.preventDefault()}
                     crossOrigin="anonymous"
                     src={
                       photo.signedUrl?.startsWith('/')
@@ -264,6 +268,8 @@ function PhotoGallery({ albumId, isAdmin = false }) {
               >
                 <img
                   crossOrigin="anonymous"
+                  draggable={false}
+                  onContextMenu={(e) => e.preventDefault()}
                   src={
                     photo.signedUrl?.startsWith('/')
                       ? `${process.env.REACT_APP_API_URL}${photo.signedUrl}`
@@ -294,6 +300,8 @@ function PhotoGallery({ albumId, isAdmin = false }) {
             <div className="absolute top-[43%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90vw] h-[50vh] sm:w-[80vw] sm:h-[60vh] md:w-[70vw] md:h-[70vh] lg:w-[55vw] lg:h-[75vh] xl:w-[45vw] xl:h-[85vh] flex items-center justify-center">
               <img
                 crossOrigin="anonymous"
+                draggable={false}
+                onContextMenu={(e) => e.preventDefault()}
                 src={
                   selectedPhoto.signedUrl?.startsWith('/')
                     ? `${process.env.REACT_APP_API_URL}${selectedPhoto.signedUrl}`
@@ -328,6 +336,8 @@ function PhotoGallery({ albumId, isAdmin = false }) {
                 >
                   <img
                     crossOrigin="anonymous"
+                    draggable={false}
+                    onContextMenu={(e) => e.preventDefault()}
                     src={
                       thumb.signedUrl?.startsWith('/')
                         ? `${process.env.REACT_APP_API_URL}${thumb.signedUrl}`
