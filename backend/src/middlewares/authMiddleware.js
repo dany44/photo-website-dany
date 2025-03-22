@@ -6,24 +6,27 @@ const config = require('../config/Config');
 // Middleware d'authentification avec paramètre de personnalisation
 const authenticate = (customLogContext = '') => {
     return (req, res, next) => {
-        const token = req.cookies.token;
-
-        if (!token) {
-            config.log('warn', `Tentative d'accès à la route ${customLogContext} sans token ou avec un cookie manquant.`);
-            return res.status(401).json({ message: 'Accès refusé. Token manquant ou incorrect.' });
+      const token = req.cookies.token;
+  
+      if (!token) {
+        // Log uniquement si customLogContext n'est pas vide
+        if (customLogContext) {
+          config.log('warn', `Tentative d'accès à la route ${customLogContext} sans token ou avec un cookie manquant.`);
         }
+        return res.status(401).json({ message: 'Accès refusé. Token manquant ou incorrect.' });
+      }
 
-        try {
-            const decoded = jwt.verify(token, process.env.JWT_SECRET);
-            req.user = decoded;
-            next();
-        } catch (error) {
-            config.log('error', `Token invalide : ${error.message} ${customLogContext}`);
-            return res.status(403).json({ message: 'Token invalide ou expiré.' });
-        }
+      try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        req.user = decoded;
+        next();
+      } catch (error) {
+        config.log('error', `Token invalide : ${error.message} ${customLogContext}`);
+        return res.status(403).json({ message: 'Token invalide ou expiré.' });
+      }
     };
-};
-
+  };
+  
 // Middleware pour vérifier le rôle de l'utilisateur
 const authorize = (roles = []) => {
     // Convertir en tableau si un seul rôle est fourni

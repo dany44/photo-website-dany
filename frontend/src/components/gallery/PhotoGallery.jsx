@@ -99,7 +99,7 @@ function PhotoGallery({ albumId, isAdmin = false }) {
     dots: false,
     infinite: false,
     speed: 500,
-    slidesToShow: Math.min(photos.length, 5),
+    slidesToShow: photos.length > 0 ? Math.min(photos.length, 5) : 1,
     slidesToScroll: 1,
     nextArrow: <NextArrow />,
     prevArrow: <PrevArrow />,
@@ -107,14 +107,14 @@ function PhotoGallery({ albumId, isAdmin = false }) {
       {
         breakpoint: 1024,
         settings: {
-          slidesToShow: Math.min(photos.length, 3),
+          slidesToShow: photos.length > 0 ? Math.min(photos.length, 3) : 1,
           slidesToScroll: 1,
         },
       },
       {
         breakpoint: 600,
         settings: {
-          slidesToShow: Math.min(photos.length, 2),
+          slidesToShow: photos.length > 0 ? Math.min(photos.length, 2) : 1,
           slidesToScroll: 1,
         },
       },
