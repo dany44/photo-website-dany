@@ -17,6 +17,37 @@ function PhotoGallery({ albumId, isAdmin = false }) {
   // Déterminer la vue à utiliser : album spécifique ou globale.
   const isAlbumView = Boolean(albumId);
 
+  // Composant flèche de droite
+  function NextArrow(props) {
+    const { className, style, onClick } = props;
+    return (
+      <div
+        className={`${className} text-white text-4xl cursor-pointer z-10`}
+        style={{
+          ...style,
+          right: '-20px',
+        }}
+        onClick={onClick}
+      />
+    );
+  }
+
+  // Composant flèche de gauche
+  function PrevArrow(props) {
+    const { className, style, onClick } = props;
+    return (
+      <div
+        className={`${className} text-white text-4xl cursor-pointer z-10`}
+        style={{
+          ...style,
+          left: '-20px',
+          zIndex: 1,
+        }}
+        onClick={onClick}
+      />
+    );
+  }
+
   // Extraction des données
   const {
     photos,
@@ -26,16 +57,16 @@ function PhotoGallery({ albumId, isAdmin = false }) {
     error,
     deletePhoto,
   } = isAlbumView
-    ? {
+      ? {
         photos: albumQuery.data?.album?.photos || [],
         currentPage: 1,
         totalPages: 1,
         isLoading: albumQuery.isLoading,
         error: albumQuery.error,
         // Pour une vue d'album, la suppression peut être désactivée ou gérée différemment.
-        deletePhoto: () => {},
+        deletePhoto: () => { },
       }
-    : {
+      : {
         photos: photosQuery.photos,
         currentPage: photosQuery.currentPage,
         totalPages: photosQuery.totalPages,
@@ -70,6 +101,8 @@ function PhotoGallery({ albumId, isAdmin = false }) {
     speed: 500,
     slidesToShow: Math.min(photos.length, 5),
     slidesToScroll: 1,
+    nextArrow: <NextArrow />,
+    prevArrow: <PrevArrow />,
     responsive: [
       {
         breakpoint: 1024,
@@ -143,7 +176,7 @@ function PhotoGallery({ albumId, isAdmin = false }) {
               <div
                 key={photo._id}
                 onClick={() => handleOpenModal(index)}
-                className="mb-2 break-inside-avoid relative group cursor-pointer"
+                className="mb-2 break-inside-avoid relative group cursor-pointer" 
               >
                 <img
                   crossOrigin="anonymous"
@@ -283,9 +316,8 @@ function PhotoGallery({ albumId, isAdmin = false }) {
                 <div
                   key={thumb._id}
                   ref={(el) => (thumbnailRefs.current[idx] = el)}
-                  className={`cursor-pointer mr-2 w-16 h-[90%] sm:w-20 md:w-24 flex-shrink-0 border-2 ${
-                    idx === selectedIndex ? 'border-white' : 'border-transparent'
-                  } hover:border-white`}
+                  className={`cursor-pointer mr-2 w-16 h-[90%] sm:w-20 md:w-24 flex-shrink-0 border-2 ${idx === selectedIndex ? 'border-white' : 'border-transparent'
+                    } hover:border-white`}
                   onClick={(e) => {
                     e.stopPropagation();
                     handleThumbnailClick(idx);
