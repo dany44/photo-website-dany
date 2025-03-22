@@ -313,7 +313,8 @@ function PhotoGallery({ albumId, isAdmin = false }) {
             </div>
             <div className="absolute top-[78%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80vw] text-white text-center 
                   sm:top-[78%] sm:left-1/2 sm:text-center 
-                  md:top-1/2 md:left-auto md:right-0 md:translate-x-0 md:w-48 md:text-left">
+                  md:top-1/2 md:left-auto md:right-10 md:translate-x-0 md:w-48 md:text-left
+                  lg:top-1/2 lg:left-auto lg:right-40 lg:translate-x-0 lg:w-48 lg:text-left">  
               <h3 className="text-lg font-bold mb-1">{selectedPhoto.title}</h3>
               <p className="text-sm text-gray-300">{selectedPhoto.description}</p>
             </div>
