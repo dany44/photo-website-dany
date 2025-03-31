@@ -3,7 +3,7 @@ import React from 'react';
 
 const AboutPage = () => {
     return (
-        <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800 text-gray-100 flex items-center justify-center p-6">
+        <div className="min-h-screen bg-gradient-to-b text-gray-100 flex items-center justify-center p-6">
             <div className="max-w-4xl w-full bg-gray-800 p-10 rounded-xl shadow-2xl border border-gray-700">
                 <h1 className="text-5xl font-extrabold mb-6 text-center tracking-tight">
                     À Propos de Moi
