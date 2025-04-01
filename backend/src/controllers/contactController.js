@@ -4,11 +4,14 @@ const config = require('../config/Config'); // Pour les logs et configurations g
 
 // Fonction pour envoyer l'email
 exports.sendContactEmail = async (req, res, next) => {
-
   const { name, email, message } = req.body;
-  // Valider les champs (nom, email, message)
+
+  // Valider les champs (nom, email, message) - Cas si les champs sont manquants
   if (!name || !email || !message) {
-    return res.status(400).json({ message: "Tous les champs sont requis." });
+    return res.status(400).json({
+      success: false,
+      message: "Tous les champs sont requis."
+    });
   }
 
   try {

@@ -20,13 +20,15 @@ const contactValidationSchema = Joi.object({
 
 // Middleware de validation
 const validateContactForm = (req, res, next) => {
-  const { error } = contactValidationSchema.validate(req.body);
-
-  if (error) {
-    return res.status(400).json({ message: error.details[0].message });
-  }
-
-  next(); // Si la validation réussit, passe à la suite
-};
-
-module.exports = validateContactForm;
+    const { error } = contactValidationSchema.validate(req.body);
+    if (error) {
+      const errors = {};
+      error.details.forEach(err => {
+        errors[err.path[0]] = err.message;
+      });
+      return res.status(400).json({ success: false, errors });
+    }
+    next();
+  };
+  
+module.exports =  validateContactForm;
