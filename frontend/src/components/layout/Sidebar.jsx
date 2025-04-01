@@ -4,11 +4,6 @@ import { NavLink } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
 import { useAlbums } from "../../hooks/useAlbums";
 import {
-  FaUserShield,
-  FaSignInAlt,
-  FaSignOutAlt,
-  FaInfoCircle,
-  FaEnvelope,
   FaChevronDown,
   FaChevronUp,
 } from "react-icons/fa";
