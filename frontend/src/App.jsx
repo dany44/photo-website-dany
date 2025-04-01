@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import Sidebar from "./components/layout/Sidebar";
 import AppRoutes from "./routes/AppRoutes";
+import Footer from "./components/layout/Footer"; 
 
 function App() {
   const [isSidebarVisible, setIsSidebarVisible] = useState(false);
@@ -59,6 +60,7 @@ function App() {
         <main>
           <AppRoutes />
         </main>
+        <Footer />
       </div>
     </div>
   );
