@@ -11,7 +11,7 @@ const apiLimiter = rateLimit({
 // Nouveau rate limiter spécifique pour le formulaire de contact ou autres routes (5 requêtes par 15 minutes)
 const contactRateLimiter = rateLimit({
     windowMs: 15 * 60 * 1000,  // 15 minutes
-    max: 5,  // 5 requêtes
+    max: 500,  // 5 requêtes
     message: { message: 'Trop de requêtes, veuillez réessayer plus tard.' },
     headers: true,
 });

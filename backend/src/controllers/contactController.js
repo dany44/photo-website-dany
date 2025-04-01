@@ -1,8 +1,10 @@
 // src/controllers/contactController.js
 const nodemailer = require('nodemailer'); // Importer Nodemailer
+const config = require('../config/Config'); // Pour les logs et configurations globales
 
 // Fonction pour envoyer l'email
 exports.sendContactEmail = async (req, res, next) => {
+
   const { name, email, message } = req.body;
   // Valider les champs (nom, email, message)
   if (!name || !email || !message) {
@@ -30,7 +32,7 @@ exports.sendContactEmail = async (req, res, next) => {
     // Envoi de l'email
     await transporter.sendMail(mailOptions);
 
-    // Retourner une réponse au frontend
+    config.log('info', `Email envoyé : ${email}`);
     res.status(200).json({ success: true, message: 'Message envoyé avec succès.' });
 
   } catch (error) {
