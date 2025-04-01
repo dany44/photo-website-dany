@@ -6,6 +6,7 @@ import AdminPage from '../pages/Admin/AdminPage';
 import LoginPage from '../pages/Login/LoginPage';
 import AboutPage from '../pages/About/AboutPage';
 import AlbumGalleryPage from '../pages/Album/AlbumGalleryPage'; 
+import ContactPage from "../pages/Contact/ContactPage";
 
 function AppRoutes() {
   return (
@@ -13,6 +14,7 @@ function AppRoutes() {
       <Route path="/" element={<HomePage />} />
       <Route path="/admin" element={<AdminPage />} />
       <Route path="/login" element={<LoginPage />} />
+      <Route path="/contact" element={<ContactPage />} />
       <Route path="/about" element={<AboutPage />} />
       <Route path="/album/:albumId" element={<AlbumGalleryPage />} />
 
