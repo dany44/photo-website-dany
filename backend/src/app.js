@@ -4,6 +4,7 @@ const cors = require('cors');
 const config = require('./config/Config'); 
 const photoRoutes = require('./routes/photoRoutes');
 const albumRoutes = require('./routes/albumRoutes');
+const contactRoutes = require('./routes/contactRoutes');
 const path = require('path');
 const helmet = require('helmet');
 const mongoSanitize = require('express-mongo-sanitize');
@@ -53,9 +54,10 @@ app.use(express.json());
 // Middleware pour parser les cookies
 app.use(cookieParser());
 
-// Routes principales
+// Routes
 app.use('/photos', photoRoutes);
 app.use('/albums', albumRoutes);
+app.use('/contact', contactRoutes);  
 // Route de test
 app.get('/', (req, res) => {
     res.send('Bienvenue sur l\'API Photo Gallery !');

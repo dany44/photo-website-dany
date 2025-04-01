@@ -1,5 +1,5 @@
 const express = require('express');
-const rateLimit = require('../middlewares/apiLimiter');
+const { apiLimiter } = require('../middlewares/apiLimiter');
 const albumController = require('../controllers/albumController');
 const { authenticate, authorize } = require('../middlewares/authMiddleware');
 const { upload, handleUploadError } = require('../middlewares/uploadMiddleware');
@@ -8,8 +8,8 @@ const validateAlbum = require('../middlewares/validateAlbum');
 const router = express.Router();
 
 // Appliquer rate limit sur les routes publiques
-router.get('/', rateLimit, albumController.getAllAlbums);
-router.get('/:id', rateLimit, albumController.getAlbumById);
+router.get('/', apiLimiter, albumController.getAllAlbums);
+router.get('/:id', apiLimiter, albumController.getAlbumById);
 
 // Routes protégées (admin uniquement)
 router.post('/', authenticate('post / (albums)'), authorize('admin'), upload.single('coverPhoto'), validateAlbum, handleUploadError, albumController.createAlbum);

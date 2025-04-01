@@ -1,5 +1,5 @@
 const express = require('express');
-const rateLimit = require('../middlewares/apiLimiter'); // Import du middleware rate limit
+const { apiLimiter } = require('../middlewares/apiLimiter'); // Import du middleware rate limit
 const { authenticate, authorize } = require('../middlewares/authMiddleware');
 const { upload, handleUploadError } = require('../middlewares/uploadMiddleware');
 const photoController = require('../controllers/photoController');
@@ -8,10 +8,10 @@ const validatePhoto = require('../middlewares/validatePhoto');
 const router = express.Router();
 
 //Rate limit sur login pour éviter brute force
-router.post('/login', rateLimit, photoController.login);
+router.post('/login', apiLimiter, photoController.login);
 
 //Rate limit sur la récupération des photos pour éviter un abus
-router.get('/', rateLimit, photoController.getPhotos);
+router.get('/', apiLimiter, photoController.getPhotos);
 
 // Routes nécessitant authentification
 router.post('/logout', authenticate('post /logout (photos)'), photoController.logout); 
