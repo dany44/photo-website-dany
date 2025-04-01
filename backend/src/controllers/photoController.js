@@ -8,7 +8,6 @@ const fs = require('fs');
 const bcrypt = require('bcrypt');
 const cloudinary = require('cloudinary').v2;
 
-
 // Génère un lien pré-signé pour S3
 const generateSignedUrl = async (key) => {
     const params = {
@@ -65,8 +64,8 @@ exports.logout = (req, res, next) => {
         res.clearCookie('token', {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
-            sameSite: 'strict',
-        });
+            sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'Lax',
+          });          
         config.log('info', 'Utilisateur déconnecté.');
         res.json({ message: 'Déconnexion réussie.' });
     } catch (error) {
