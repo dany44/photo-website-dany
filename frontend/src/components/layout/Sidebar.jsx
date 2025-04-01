@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { NavLink } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
 import { useAlbums } from "../../hooks/useAlbums";
-import { FaChevronDown, FaChevronUp } from "react-icons/fa";
+import { FaChevronDown, FaChevronUp, FaInstagram, FaFlickr, Fa500Px } from "react-icons/fa";
 
 const Sidebar = ({ closeSidebar }) => {
   const { isAuthenticated, logout } = React.useContext(AuthContext);
@@ -21,6 +21,19 @@ const Sidebar = ({ closeSidebar }) => {
         <div className="text-white font-signature text-5xl leading-snug">
           Dany<br />Khadhar
         </div>
+      </div>
+
+      {/* === Social Media Icons === */}
+      <div className="flex justify-center space-x-4 mb-6">
+        <a href="https://www.instagram.com/danykhadhar" target="_blank" rel="noopener noreferrer">
+          <FaInstagram className="text-white text-xl hover:text-indigo-400" />
+        </a>
+        <a href="https://www.flickr.com/photos/danykhadhar" target="_blank" rel="noopener noreferrer">
+          <FaFlickr className="text-white text-xl hover:text-indigo-400" />
+        </a>
+        <a href="https://500px.com/danykhadhar" target="_blank" rel="noopener noreferrer">
+          <Fa500Px className="text-white text-xl hover:text-indigo-400" />
+        </a>
       </div>
 
       {/* === Navigation === */}
