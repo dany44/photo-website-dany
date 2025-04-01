@@ -11,7 +11,7 @@ import {
 const Sidebar = ({ closeSidebar }) => {
   const { isAuthenticated, logout } = React.useContext(AuthContext);
   const { albums, isLoading } = useAlbums();
-  const [portfolioOpen, setPortfolioOpen] = useState(true);
+  const [portfolioOpen, setPortfolioOpen] = useState(false);
 
   const handleNavigation = () => {
     if (window.innerWidth < 768) {
@@ -30,7 +30,7 @@ const Sidebar = ({ closeSidebar }) => {
 
 
       {/* === Navigation === */}
-      <nav className="flex-1 overflow-y-auto text-sm">
+      <nav className="flex-1 overflow-y-auto scrollbar-none text-sm">
         {/* Accueil */}
         <NavLink
           to="/"
