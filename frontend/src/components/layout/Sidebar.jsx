@@ -1,20 +1,17 @@
 // src/components/Sidebar.jsx
-import React from "react";
+import React, { useState } from "react";
 import { NavLink } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
 import { useAlbums } from "../../hooks/useAlbums";
 import {
-  FaHome,
-  FaUserShield,
-  FaSignInAlt,
-  FaSignOutAlt,
-  FaInfoCircle,
-  FaFolderOpen,
+  FaChevronDown,
+  FaChevronUp,
 } from "react-icons/fa";
 
 const Sidebar = ({ closeSidebar }) => {
   const { isAuthenticated, logout } = React.useContext(AuthContext);
   const { albums, isLoading } = useAlbums();
+  const [portfolioOpen, setPortfolioOpen] = useState(true);
 
   const handleNavigation = () => {
     if (window.innerWidth < 768) {
@@ -23,119 +20,126 @@ const Sidebar = ({ closeSidebar }) => {
   };
 
   return (
-    <div className="fixed top-0 left-0 h-screen w-64 bg-black text-gray-200 flex flex-col transition-all duration-300 font-poppins">
-      <div className="mt-8 mb-8 px-4 flex flex-col items-center">
-        <div className="text-center text-5xl font-signature italic text-gray-100 tracking-wide">
-          Dany Khadhar
+    <div className="fixed top-0 left-0 h-screen w-64 bg-black text-gray-200 flex flex-col shadow-lg z-50">
+      {/* === Logo === */}
+      <div className="mt-6 mb-6 px-4 flex flex-col items-center text-center">
+        <div className="text-white font-signature text-5xl leading-tight">
+          Dany<br />Khadhar
         </div>
       </div>
 
-      <nav className="flex-1 overflow-y-auto">
+
+      {/* === Navigation === */}
+      <nav className="flex-1 overflow-y-auto text-sm">
+        {/* Accueil */}
         <NavLink
           to="/"
           onClick={handleNavigation}
           className={({ isActive }) =>
-            `flex items-center px-4 py-2 transition-colors ${
-              isActive ? "bg-gray-500" : "hover:bg-gray-700"
+            `block px-6 py-3 font-medium tracking-wide uppercase ${isActive ? "text-indigo-400" : "hover:text-indigo-300"
             }`
           }
         >
-          <FaHome className="text-xl" />
-          <span className="ml-2 text-sm">Accueil</span>
+          Accueil
         </NavLink>
 
-        {/* Section Blog (placeholder, pas de nav pour le moment) */}
-        <div className="mt-4 px-4 py-2 border-t border-gray-700">
-          <h3 className="text-lg font-semibold text-gray-100">Blog</h3>
-          <p className="text-xs text-gray-400 mt-1">
-            Bientôt disponible...
-          </p>
-        </div>
+        {/* Portfolio dropdown */}
+        <button
+          className="w-full text-left px-6 py-3 font-medium uppercase tracking-wide flex justify-between items-center hover:text-indigo-300"
+          onClick={() => setPortfolioOpen(!portfolioOpen)}
+        >
+          Portfolio
+          {portfolioOpen ? <FaChevronUp size={14} /> : <FaChevronDown size={14} />}
+        </button>
 
-        {isAuthenticated && (
-          <NavLink
-            to="/admin"
-            onClick={handleNavigation}
-            className={({ isActive }) =>
-              `flex items-center px-4 py-2 transition-colors ${
-                isActive ? "bg-gray-500" : "hover:bg-gray-800"
-              }`
-            }
-          >
-            <FaUserShield className="text-xl" />
-            <span className="ml-2 text-sm">Admin</span>
-          </NavLink>
-        )}
-
-        {!isLoading && albums.length > 0 && (
-          <div className="mt-4">
-            <h3 className="px-4 py-2 text-gray-400 uppercase text-xs">
-              Portfolio
-            </h3>
+        {portfolioOpen && !isLoading && albums.length > 0 && (
+          <div className="ml-4 border-l border-gray-700 pl-4 mb-2">
             {albums.map((album) => (
               <NavLink
                 key={album._id}
                 to={`/album/${album._id}`}
                 onClick={handleNavigation}
                 className={({ isActive }) =>
-                  `flex items-center px-6 py-2 transition-colors ${
-                    isActive ? "bg-gray-700" : "hover:bg-gray-800"
+                  `block py-2 text-sm ${isActive ? "text-indigo-400 font-semibold" : "text-gray-400 hover:text-indigo-300"
                   }`
                 }
               >
-                <FaFolderOpen className="text-lg" />
-                <span className="ml-2 text-sm">{album.name}</span>
+                {album.name}
               </NavLink>
             ))}
           </div>
         )}
 
-        {!isAuthenticated && (
-          <NavLink
-            to="/login"
-            onClick={handleNavigation}
-            className={({ isActive }) =>
-              `flex items-center px-4 py-2 transition-colors ${
-                isActive ? "bg-gray-500" : "hover:bg-gray-800"
-              }`
-            }
-          >
-            <FaSignInAlt className="text-xl" />
-            <span className="ml-2 text-sm">Connexion</span>
-          </NavLink>
-        )}
-
-        {isAuthenticated && (
-          <button
-            onClick={() => {
-              logout();
-              handleNavigation();
-            }}
-            className="flex items-center px-4 py-2 w-full text-left hover:bg-gray-800 transition-colors"
-          >
-            <FaSignOutAlt className="text-xl" />
-            <span className="ml-2 text-sm">Déconnexion</span>
-          </button>
-        )}
-
+        {/* À propos */}
         <NavLink
           to="/about"
           onClick={handleNavigation}
           className={({ isActive }) =>
-            `flex items-center px-4 py-2 transition-colors ${
-              isActive ? "bg-gray-500" : "hover:bg-gray-700"
+            `block px-6 py-3 font-medium uppercase tracking-wide ${isActive ? "text-indigo-400" : "hover:text-indigo-300"
             }`
           }
         >
-          <FaInfoCircle className="text-xl" />
-          <span className="ml-2 text-sm">À Propos</span>
+          À Propos
         </NavLink>
+
+        {/* Me contacter */}
+        <NavLink
+          to="/contact"
+          onClick={handleNavigation}
+          className={({ isActive }) =>
+            `block px-6 py-3 font-medium uppercase tracking-wide ${isActive ? "text-indigo-400" : "hover:text-indigo-300"
+            }`
+          }
+        >
+          Me contacter
+        </NavLink>
+
+        {/* Admin / Connexion / Déconnexion */}
+        {isAuthenticated ? (
+          <>
+            <NavLink
+              to="/admin"
+              onClick={handleNavigation}
+              className={({ isActive }) =>
+                `block px-6 py-3 font-medium uppercase tracking-wide ${isActive ? "text-indigo-400" : "hover:text-indigo-300"
+                }`
+              }
+            >
+              Admin
+            </NavLink>
+            <button
+              onClick={() => {
+                logout();
+                handleNavigation();
+              }}
+              className="block w-full text-left px-6 py-3 font-medium uppercase tracking-wide hover:text-indigo-300"
+            >
+              Déconnexion
+            </button>
+          </>
+        ) : (
+          <NavLink
+            to="/login"
+            onClick={handleNavigation}
+            className={({ isActive }) =>
+              `block px-6 py-3 font-medium uppercase tracking-wide ${isActive ? "text-indigo-400" : "hover:text-indigo-300"
+              }`
+            }
+          >
+            Connexion
+          </NavLink>
+        )}
+
+        {/* Blog (désactivé) */}
+        <div className="px-6 py-3 text-gray-500 uppercase text-xs tracking-widest">
+          Blog (bientôt)
+        </div>
       </nav>
 
-      <div className="p-4 text-center text-xs text-gray-500">
-        © 2025 Dany Khadhar
-        <br />
-        All rights reserved.
+      {/* Footer */}
+      <div className="p-4 text-center text-xs text-gray-500 border-t border-gray-800">
+        © 2025 Dany Khadhar<br />
+        Tous droits réservés.
       </div>
     </div>
   );
