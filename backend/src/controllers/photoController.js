@@ -47,11 +47,11 @@ exports.login = async (req, res, next) => {
         config.log('info', `Utilisateur connecté : ${username}`);
         res.cookie('token', token, {
             httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: 'None',
+            secure: process.env.NODE_ENV === 'production', // HTTPS uniquement en prod
+            sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'Lax', // None si HTTPS, sinon Lax
             maxAge: 3600000, // 1h
-        });
-
+          });
+          
         return res.json({ message: 'Connexion réussie' });
 
     } catch (error) {

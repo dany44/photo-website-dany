@@ -7,7 +7,6 @@ const config = require('../config/Config');
 const authenticate = (customLogContext = '') => {
     return (req, res, next) => {
       const token = req.cookies.token;
-  
       if (!token) {
         // Log uniquement si customLogContext n'est pas vide
         if (customLogContext) {
