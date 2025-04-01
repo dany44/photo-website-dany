@@ -12,22 +12,21 @@
   @apply block text-sm font-medium text-gray-200 mb-1;
 }
 
-/* Inputs, textareas : un peu plus compacts, border plus propre */
+/* Inputs, textareas : un peu plus compacts, border plus propre et fond gris foncé */
 .input-field {
-  @apply block w-full rounded-md border border-gray-700 bg-gray-800 
-    text-white focus:border-blue-500 focus:ring-blue-500 
-    focus:outline-none focus:ring-1 px-3 py-2;
+  @apply block w-full rounded-md border border-gray-600 bg-gray-900 text-white focus:border-blue-500 focus:ring-blue-500 focus:outline-none focus:ring-1 px-3 py-2;
 }
 
 /* Label custom pour input file */
 .file-input-label {
   @apply inline-flex items-center justify-center px-4 py-2 
-    rounded-md bg-gray-800 text-gray-200 border border-gray-600 
+    rounded-md bg-gray-900 text-gray-200 border border-gray-600 
     cursor-pointer hover:bg-gray-700 transition-colors;
 }
 .file-input-label input {
   @apply hidden;
 }
+
 
 /* Boutons primaires et secondaires remplacés par un design sobre */
 .button-primary {
