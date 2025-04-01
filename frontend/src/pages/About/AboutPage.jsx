@@ -28,15 +28,6 @@ const AboutPage = () => {
                         </li>
                     </ul>
                 </section>
-                <section>
-                    <h2 className="text-3xl font-bold mb-4">Contact</h2>
-                    <p className="text-lg">
-                        Ce site étant encore en développement, si vous souhaitez me faire part de vos retours, veuillez me contacter à l'adresse suivante :{" "}
-                        <a href="mailto:danykhdr.photo@gmail.com" className="text-blue-400 hover:underline">
-                            danykhdr.photo@gmail.com
-                        </a>
-                    </p>
-                </section>
             </div>
         </div>
     );
