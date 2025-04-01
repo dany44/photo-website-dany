@@ -4,7 +4,7 @@
 
 /* Container principal (plus étroit, mieux centré) */
 .container-box {
-  @apply max-w-3xl w-full mx-auto p-8 bg-gray-900 rounded-lg shadow-lg text-white;
+  @apply max-w-3xl w-full mx-auto p-8 bg-gray-900 rounded-lg text-white;
 }
 
 /* Labels et titres */
