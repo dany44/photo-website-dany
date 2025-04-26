@@ -110,10 +110,10 @@ function HomePage() {
         <div className="max-w-6xl mx-auto text-center">
           <h2 className="text-4xl font-extrabold mb-6 leading-tight">Bienvenue</h2>
           <p className="text-lg leading-relaxed max-w-3xl mx-auto">
-          Bonjour, je m'appelle Dany Khadhar. Sur ce site, je présente mes photos de voyage, 
-          réalisées au fil de mes aventures. En tant qu'amateur, je m'attache à documenter 
-          les moments que je trouve intéressants et à offrir un aperçu sincère de mes déplacements. 
-          Merci de prendre le temps de visiter mon univers photographique. Bonne visite !
+            Bonjour, je m'appelle Dany Khadhar.
+            Je propose ici une sélection de photographies prises au fil de mes voyages.
+            Mon objectif est de documenter des lieux, des ambiances et des scènes de vie rencontrés au gré de mes déplacements.
+            Merci de prendre le temps de parcourir mon travail. Bonne visite !
           </p>
         </div>
       </section>
@@ -124,9 +124,9 @@ function HomePage() {
           <h2 className="text-3xl font-bold mb-4 text-center tracking-tight">Portfolio</h2>
           {/* Section descriptive pour le Portfolio */}
           <p className="text-center text-gray-300 mb-10 max-w-3xl mx-auto leading-relaxed">
-          Parcourez mes albums regroupant divers moments de mes voyages. 
-          Chaque album rassemble une série d'images prises dans des contextes variés, 
-          illustrant des lieux, des ambiances et des instants simples. 
+            Parcourez mes albums regroupant divers moments de mes voyages.
+            Chaque album rassemble une série d'images prises dans des contextes variés,
+            illustrant des lieux, des ambiances et des instants simples.
           </p>
           {/* Grille responsive */}
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
@@ -198,7 +198,7 @@ function HomePage() {
           <h2 className="text-3xl font-bold mb-4 text-center tracking-tight">Dernières photos</h2>
           {/* Section descriptive pour les Dernières photos */}
           <p className="text-center text-gray-300 mb-10 max-w-3xl mx-auto leading-relaxed">
-          Retrouvez une sélection de mes clichés récents, illustrant divers moments de mes voyages. 
+            Retrouvez une sélection de mes clichés récents, illustrant divers moments de mes voyages.
           </p>
           <PhotoGallery />
         </div>
