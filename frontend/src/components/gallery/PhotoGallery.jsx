@@ -306,7 +306,7 @@ function PhotoGallery({ albumId, isAdmin = false }) {
                   selectedPhoto.signedUrl?.startsWith('/')
                     ? `${process.env.REACT_APP_API_URL}${selectedPhoto.signedUrl}`
                     : selectedPhoto.signedUrl
-                }
+                } 
                 alt={selectedPhoto.title}
                 className="object-contain w-full h-full"
               />
