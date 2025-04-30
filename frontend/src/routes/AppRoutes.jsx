@@ -7,6 +7,7 @@ import LoginPage from '../pages/Login/LoginPage';
 import AboutPage from '../pages/About/AboutPage';
 import AlbumGalleryPage from '../pages/Album/AlbumGalleryPage'; 
 import ContactPage from "../pages/Contact/ContactPage";
+import ArticlePage from '../pages/Article/ArticlePage';
 
 function AppRoutes() {
   return (
@@ -17,8 +18,8 @@ function AppRoutes() {
       <Route path="/contact" element={<ContactPage />} />
       <Route path="/about" element={<AboutPage />} />
       <Route path="/album/:albumId" element={<AlbumGalleryPage />} />
-
-      {/* Ajoute d'autres routes au besoin */}
+      <Route path="/articles/:slug" element={<ArticlePage />} />
+      {}
     </Routes>
   );
 }

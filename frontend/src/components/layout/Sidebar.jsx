@@ -1,13 +1,17 @@
+// src/components/layout/Sidebar.jsx
 import React, { useState } from "react";
 import { NavLink } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
 import { useAlbums } from "../../hooks/useAlbums";
+import { useArticles } from "../../hooks/useArticles";
 import { FaChevronDown, FaChevronUp, FaInstagram, FaFlickr, Fa500Px } from "react-icons/fa";
 
 const Sidebar = ({ closeSidebar }) => {
   const { isAuthenticated, logout } = React.useContext(AuthContext);
-  const { albums, isLoading } = useAlbums();
+  const { albums, isLoading: isLoadingAlbums } = useAlbums();
+  const { articles, isLoading: isLoadingArticles } = useArticles();
   const [portfolioOpen, setPortfolioOpen] = useState(false);
+  const [blogOpen, setBlogOpen] = useState(false);
 
   const handleNavigation = () => {
     if (window.innerWidth < 768) closeSidebar();
@@ -15,15 +19,14 @@ const Sidebar = ({ closeSidebar }) => {
 
   return (
     <div className="fixed top-0 left-0 h-screen w-64 bg-black text-gray-200 flex flex-col shadow-lg z-50">
-      
-      {/* === Logo === */}
+      {/* Logo */}
       <div className="mt-8 mb-6 px-6 text-center">
         <div className="text-white font-signature text-5xl leading-snug">
           Dany<br />Khadhar
         </div>
       </div>
 
-      {/* === Social Media Icons === */}
+      {/* Social Media Icons */}
       <div className="flex justify-center space-x-4 mb-6">
         <a href="https://www.instagram.com/danykhadhar" target="_blank" rel="noopener noreferrer">
           <FaInstagram className="text-white text-xl hover:text-indigo-400" />
@@ -36,9 +39,8 @@ const Sidebar = ({ closeSidebar }) => {
         </a>
       </div>
 
-      {/* === Navigation === */}
+      {/* Navigation */}
       <nav className="flex-1 overflow-y-auto scrollbar-none text-sm">
-
         {/* Accueil */}
         <NavLink
           to="/"
@@ -52,7 +54,7 @@ const Sidebar = ({ closeSidebar }) => {
           Accueil
         </NavLink>
 
-        {/* Barre */}
+        {/* Separator */}
         <div className="my-1 mx-6 border-t border-gray-700" />
 
         {/* Portfolio Dropdown */}
@@ -63,8 +65,7 @@ const Sidebar = ({ closeSidebar }) => {
           Portfolio
           {portfolioOpen ? <FaChevronUp size={14} /> : <FaChevronDown size={14} />}
         </button>
-
-        {portfolioOpen && !isLoading && albums.length > 0 && (
+        {portfolioOpen && !isLoadingAlbums && albums.length > 0 && (
           <div className="ml-6 pl-3 border-l border-gray-700 mb-4">
             {albums.map((album) => (
               <NavLink
@@ -152,14 +153,39 @@ const Sidebar = ({ closeSidebar }) => {
           </NavLink>
         )}
 
-        {/* Blog */}
+        {/* Blog Dropdown */}
         <div className="my-1 mx-6 border-t border-gray-700" />
-        <div className="px-6 py-3 text-gray-500 uppercase text-xs tracking-widest">
-          Blog (bientôt)
-        </div>
+        <button
+          className="w-full text-left px-6 py-3 font-medium uppercase tracking-wide flex justify-between items-center hover:text-indigo-300"
+          onClick={() => setBlogOpen(!blogOpen)}
+        >
+          Blog
+          {blogOpen ? <FaChevronUp size={14} /> : <FaChevronDown size={14} />}
+        </button>
+        {blogOpen && !isLoadingArticles && articles.length > 0 && (
+          <div className="ml-6 pl-3 border-l border-gray-700 mb-4">
+            {articles.map((art) => (
+              <NavLink
+                key={art.slug}
+                to={`/articles/${art.slug}`}
+                onClick={handleNavigation}
+                className={({ isActive }) =>
+                  `block py-2 text-sm ${
+                    isActive
+                      ? "text-indigo-400 font-semibold"
+                      : "text-gray-400 hover:text-indigo-300"
+                  }`
+                }
+              >
+                {art.title}
+              </NavLink>
+            ))}
+          </div>
+        )}
+
       </nav>
 
-      {/* === Footer === */}
+      {/* Footer */}
       <div className="p-4 text-center text-xs text-gray-500 border-t border-gray-800">
         © 2025 Dany Khadhar<br />
         Tous droits réservés.
