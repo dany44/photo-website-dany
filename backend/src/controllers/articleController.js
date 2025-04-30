@@ -1,4 +1,4 @@
-const Article = require('../models/articleModel');
+const Article = require('../models/Article');
 const config = require('../config/Config');
 
 //upload d'un fichier Markdown et création d'un article
@@ -17,11 +17,13 @@ exports.uploadMarkdown = async (req, res, next) => {
         if (existing) {
             return res.status(400).json({ message: 'Un article avec ce slug existe déjà.' });
         }
+        console.log('info', `Création de l'article : ${title} avec le slug : ${slug}`);
         const article = new Article({
             title,
             slug,
             markdownContent: content,
         });
+        await article.save();
         config.log('info', `Article créé : ${article.slug}`);
         res.status(201).json({ message: 'Article créé avec succès.', article });
     } catch (error) {

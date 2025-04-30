@@ -8,10 +8,10 @@ const router = express.Router();
 
 //Routes publiques 
 router.get('/', apiLimiter, articleController.getAllArticles);
-router.get('/:slug', apiLimiter, articleController.getArticleById);
+router.get('/:slug', apiLimiter, articleController.getArticleBySlug);
 
 // Routes nécessitant authentification
 router.post('/upload', authenticate('post /upload (articles)'), authorize('admin'), mdUpload.single('file'), handleUploadError, articleController.uploadMarkdown);
-router.delete('/:slug', authenticate('delete /:slug (articles)'), authorize('admin'), articleController.deleteArticle);
+router.delete('/:slug', authenticate('delete /:slug (articles)'), authorize('admin'), articleController.deleteArticleBySlug);
 
 module.exports = router;

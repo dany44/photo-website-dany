@@ -4,6 +4,7 @@ import { AuthContext } from '../../context/AuthContext';
 import AddPhotoForm from '../../components/forms/AddPhotoForm';
 import PhotoGallery from '../../components/gallery/PhotoGallery';
 import ManageAlbums from '../../components/admin/ManageAlbums';
+import ManageArticles from '../../components/admin/ManageArticles';
 
 function AdminPage() {
   const { isAuthenticated, loading } = useContext(AuthContext);
@@ -23,16 +24,22 @@ function AdminPage() {
   return (
     <div className="space-y-8 max-w-4xl mx-auto bg-gray-900 p-6 rounded-lg shadow-lg">
       <h2 className="text-3xl font-bold text-white text-center">Espace Admin</h2>
-      
+
       {/* Onglets */}
       <div className="flex border-b border-gray-700 mb-4">
-        {['albums', 'photos', 'gallery'].map((tab) => (
+        {['albums', 'photos', 'gallery', 'articles'].map((tab) => (
           <button
             key={tab}
             className={`flex-1 py-2 text-center text-white ${activeTab === tab ? 'border-b-2 border-blue-500 font-bold' : 'opacity-50'}`}
             onClick={() => setActiveTab(tab)}
           >
-            {tab === 'albums' ? 'Gérer Albums' : tab === 'photos' ? 'Ajouter Photo' : 'Galerie'}
+            {tab === 'albums'
+              ? 'Gérer Albums'
+              : tab === 'photos'
+              ? 'Ajouter Photo'
+              : tab === 'gallery'
+              ? 'Galerie'
+              : 'Gérer Articles'}
           </button>
         ))}
       </div>
@@ -41,6 +48,8 @@ function AdminPage() {
       {activeTab === 'albums' && <ManageAlbums />}
       {activeTab === 'photos' && <AddPhotoForm />}
       {activeTab === 'gallery' && <PhotoGallery isAdmin />}
+      {activeTab === 'articles' && <ManageArticles />}
+
     </div>
   );
 }

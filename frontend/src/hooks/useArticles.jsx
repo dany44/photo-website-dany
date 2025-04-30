@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
     getAllArticles,
     getArticleBySlug,
-    uploadArticle,
+    uploadMarkdown,
     deleteArticle
 } from '../api/articles';
 
@@ -28,7 +28,7 @@ export function useArticles(options = {}) {
 
     // Mutation pour uploader un article
     const uploadMutation = useMutation({
-        mutationFn: uploadArticle,
+        mutationFn: uploadMarkdown,
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['articles'] });
         },
@@ -41,7 +41,7 @@ export function useArticles(options = {}) {
             queryClient.invalidateQueries({ queryKey: ['articles'] });
         },
     });
-    
+
     return {
         articles: allQuery.data?.articles || [],
         article: articleQuery.data?.article || null,
