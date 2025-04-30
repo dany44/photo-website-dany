@@ -28,6 +28,22 @@ const upload = multer({
     },
 });
 
+const mdFilter = (req, file, cb) => {
+    if (file.originalname.toLowerCase().endsWith('.md')) {
+      config.log('info', `Upload Markdown réussi : ${file.originalname}`);
+      cb(null, true);
+    } else {
+      const error = new Error('Seuls les fichiers .md sont autorisés.');
+      config.log('warn', `Échec upload Markdown : ${file.originalname}`);
+      cb(error);
+    }
+  };
+  const mdUpload = multer({
+    storage: multer.memoryStorage(),
+    fileFilter: mdFilter,
+    limits: { fileSize: 10 * 1024 * 1024 }, // 10 Mo
+  });
+
 // Middleware d'erreur personnalisé pour Multer
 const handleUploadError = (err, req, res, next) => {
     if (err instanceof multer.MulterError) {
@@ -42,5 +58,6 @@ const handleUploadError = (err, req, res, next) => {
 
 module.exports = {
     upload,
+    mdUpload,
     handleUploadError,
 };
