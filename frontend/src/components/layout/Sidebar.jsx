@@ -46,8 +46,7 @@ const Sidebar = ({ closeSidebar }) => {
           to="/"
           onClick={handleNavigation}
           className={({ isActive }) =>
-            `block px-6 py-3 font-medium tracking-wide uppercase ${
-              isActive ? "text-indigo-400" : "hover:text-indigo-300"
+            `block px-6 py-3 font-medium tracking-wide uppercase ${isActive ? "text-indigo-400" : "hover:text-indigo-300"
             }`
           }
         >
@@ -73,14 +72,43 @@ const Sidebar = ({ closeSidebar }) => {
                 to={`/album/${album._id}`}
                 onClick={handleNavigation}
                 className={({ isActive }) =>
-                  `block py-2 text-sm ${
-                    isActive
-                      ? "text-indigo-400 font-semibold"
-                      : "text-gray-400 hover:text-indigo-300"
+                  `block py-2 text-sm ${isActive
+                    ? "text-indigo-400 font-semibold"
+                    : "text-gray-400 hover:text-indigo-300"
                   }`
                 }
               >
                 {album.name}
+              </NavLink>
+            ))}
+          </div>
+        )}
+
+
+        {/* Blog Dropdown */}
+        <div className="my-1 mx-6 border-t border-gray-700" />
+        <button
+          className="w-full text-left px-6 py-3 font-medium uppercase tracking-wide flex justify-between items-center hover:text-indigo-300"
+          onClick={() => setBlogOpen(!blogOpen)}
+        >
+          Blog
+          {blogOpen ? <FaChevronUp size={14} /> : <FaChevronDown size={14} />}
+        </button>
+        {blogOpen && !isLoadingArticles && articles.length > 0 && (
+          <div className="ml-6 pl-3 border-l border-gray-700 mb-4">
+            {articles.map((art) => (
+              <NavLink
+                key={art.slug}
+                to={`/articles/${art.slug}`}
+                onClick={handleNavigation}
+                className={({ isActive }) =>
+                  `block py-2 text-sm ${isActive
+                    ? "text-indigo-400 font-semibold"
+                    : "text-gray-400 hover:text-indigo-300"
+                  }`
+                }
+              >
+                {art.title}
               </NavLink>
             ))}
           </div>
@@ -92,8 +120,7 @@ const Sidebar = ({ closeSidebar }) => {
           to="/about"
           onClick={handleNavigation}
           className={({ isActive }) =>
-            `block px-6 py-3 font-medium uppercase tracking-wide ${
-              isActive ? "text-indigo-400" : "hover:text-indigo-300"
+            `block px-6 py-3 font-medium uppercase tracking-wide ${isActive ? "text-indigo-400" : "hover:text-indigo-300"
             }`
           }
         >
@@ -106,8 +133,7 @@ const Sidebar = ({ closeSidebar }) => {
           to="/contact"
           onClick={handleNavigation}
           className={({ isActive }) =>
-            `block px-6 py-3 font-medium uppercase tracking-wide ${
-              isActive ? "text-indigo-400" : "hover:text-indigo-300"
+            `block px-6 py-3 font-medium uppercase tracking-wide ${isActive ? "text-indigo-400" : "hover:text-indigo-300"
             }`
           }
         >
@@ -122,8 +148,7 @@ const Sidebar = ({ closeSidebar }) => {
               to="/admin"
               onClick={handleNavigation}
               className={({ isActive }) =>
-                `block px-6 py-3 font-medium uppercase tracking-wide ${
-                  isActive ? "text-indigo-400" : "hover:text-indigo-300"
+                `block px-6 py-3 font-medium uppercase tracking-wide ${isActive ? "text-indigo-400" : "hover:text-indigo-300"
                 }`
               }
             >
@@ -144,45 +169,13 @@ const Sidebar = ({ closeSidebar }) => {
             to="/login"
             onClick={handleNavigation}
             className={({ isActive }) =>
-              `block px-6 py-3 font-medium uppercase tracking-wide ${
-                isActive ? "text-indigo-400" : "hover:text-indigo-300"
+              `block px-6 py-3 font-medium uppercase tracking-wide ${isActive ? "text-indigo-400" : "hover:text-indigo-300"
               }`
             }
           >
             Connexion
           </NavLink>
         )}
-
-        {/* Blog Dropdown */}
-        <div className="my-1 mx-6 border-t border-gray-700" />
-        <button
-          className="w-full text-left px-6 py-3 font-medium uppercase tracking-wide flex justify-between items-center hover:text-indigo-300"
-          onClick={() => setBlogOpen(!blogOpen)}
-        >
-          Blog
-          {blogOpen ? <FaChevronUp size={14} /> : <FaChevronDown size={14} />}
-        </button>
-        {blogOpen && !isLoadingArticles && articles.length > 0 && (
-          <div className="ml-6 pl-3 border-l border-gray-700 mb-4">
-            {articles.map((art) => (
-              <NavLink
-                key={art.slug}
-                to={`/articles/${art.slug}`}
-                onClick={handleNavigation}
-                className={({ isActive }) =>
-                  `block py-2 text-sm ${
-                    isActive
-                      ? "text-indigo-400 font-semibold"
-                      : "text-gray-400 hover:text-indigo-300"
-                  }`
-                }
-              >
-                {art.title}
-              </NavLink>
-            ))}
-          </div>
-        )}
-
       </nav>
 
       {/* Footer */}
