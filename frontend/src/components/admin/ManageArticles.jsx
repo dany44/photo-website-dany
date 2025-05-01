@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useArticles } from '../../hooks/useArticles';
 import '../../styles/styles.css';
 
@@ -15,6 +15,7 @@ function ManageArticles() {
     // États du formulaire
     const [selectedSlug, setSelectedSlug] = useState('');
     const [mdFile, setMdFile] = useState(null);
+    const [coverFile, setCoverFile] = useState(null);
     const [message, setMessage] = useState('');
     const [messageType, setMessageType] = useState(''); // "success" ou "error"
 
@@ -26,12 +27,20 @@ function ManageArticles() {
             setMessageType('error');
             return;
         }
+        // Préparer FormData
+        const formData = new FormData();
+        formData.append('file', mdFile);
+        if (coverFile) {
+            formData.append('fileCover', coverFile);
+        }
+
         try {
             setMessage('');
-            await upload(mdFile);
+            await upload(formData);
             setMessage('Article publié avec succès.');
             setMessageType('success');
             setMdFile(null);
+            setCoverFile(null);
         } catch (err) {
             const serverMsg = err.response?.data?.message || 'Erreur lors de la publication.';
             setMessage(serverMsg);
@@ -75,19 +84,30 @@ function ManageArticles() {
 
             {/* Section création / upload */}
             <form onSubmit={handleUpload} className="space-y-4">
-                <label className="label-field">Publier un nouvel article (Markdown)</label>
-                <label className="file-input-label">
-                    <span>Choisir un fichier</span>
-                    <input
-                        type="file"
-                        accept=".md"
-                        required
-                        onChange={(e) => setMdFile(e.target.files[0])}
-                    />
-                </label>
-                <span className="text-sm text-gray-400 ml-4">
-                    {mdFile ? mdFile.name : 'Aucun fichier sélectionné'}
-                </span>
+                <label className="label-field">Publier un nouvel article (Markdown + couverture)</label>
+                <div className="flex items-center space-x-4">
+                    <label className="file-input-label">
+                        <span>Fichier Markdown</span>
+                        <input
+                            type="file"
+                            accept=".md"
+                            required
+                            onChange={(e) => setMdFile(e.target.files[0])}
+                        />
+                    </label>
+                    <label className="file-input-label">
+                        <span>Image de couverture (optionnel)</span>
+                        <input
+                            type="file"
+                            accept="image/*"
+                            onChange={(e) => setCoverFile(e.target.files[0])}
+                        />
+                    </label>
+                </div>
+                <div className="text-sm text-gray-400">
+                    {mdFile ? mdFile.name : 'Aucun fichier .md sélectionné'}
+                    {coverFile && ` | Couverture: ${coverFile.name}`}
+                </div>
                 <button type="submit" className="button-primary">
                     Publier
                 </button>

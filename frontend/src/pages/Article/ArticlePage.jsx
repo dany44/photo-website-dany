@@ -6,11 +6,8 @@ import ReactMarkdown from 'react-markdown';
 
 function ArticlePage() {
   const { slug } = useParams();
-  const { article, isLoading, error, fetchArticleBySlug } = useArticles({ slug });
-
-  React.useEffect(() => {
-    fetchArticleBySlug(slug);
-  }, [slug, fetchArticleBySlug]);
+  // useArticles auto-fetches when slug is provided
+  const { article, isLoading, error } = useArticles({ slug });
 
   if (isLoading) {
     return <p className="text-center text-gray-400 mt-6">Chargement de l'article…</p>;

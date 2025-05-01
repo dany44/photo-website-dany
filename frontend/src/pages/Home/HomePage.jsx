@@ -174,22 +174,31 @@ function HomePage() {
       {/* Section Articles Récents */}
       <section className="mb-12 px-4">
         <div className="max-w-6xl mx-auto">
-          <h2 className="text-3xl font-bold mb-6 text-center tracking-tight">Derniers Articles</h2>
+          <h2 className="text-3xl font-bold mb-6 text-center tracking-tight text-white">Derniers Articles</h2>
           <Slider {...articleSliderSettings}>
-            {recent.map(({ slug, title, createdAt, markdownContent }) => (
+            {recent.map(({ slug, title, createdAt, markdownContent, coverPhoto }) => (
               <div key={slug} className="px-2">
                 <div className="bg-gray-800 rounded-lg overflow-hidden shadow-lg">
-                  {/* Placeholder cover - à remplacer par coverPhoto si disponible */}
-                  <div className="h-40 w-full bg-gray-700 flex items-center justify-center">
-                    <span className="text-gray-400">Visuel à venir</span>
-                  </div>
+                  {/* Afficher la cover si disponible, sinon placeholder */}
+                  {coverPhoto ? (
+                    <img
+                      crossOrigin="anonymous"
+                      src={coverPhoto}
+                      alt={title}
+                      className="h-40 w-full object-cover"
+                    />
+                  ) : (
+                    <div className="h-40 w-full bg-gray-700 flex items-center justify-center">
+                      <span className="text-gray-400">Visuel à venir</span>
+                    </div>
+                  )}
                   <div className="p-4">
                     <h3 className="text-xl font-semibold text-white mb-1">{title}</h3>
                     <p className="text-gray-400 text-sm mb-2">
                       {new Date(createdAt).toLocaleDateString()}
                     </p>
                     <p className="text-gray-300 text-sm mb-4">
-                    {(markdownContent ?? '').slice(0, 100)}…
+                      {(markdownContent ?? '').slice(0, 100)}…
                     </p>
                     <Link
                       to={`/articles/${slug}`}

@@ -15,9 +15,7 @@ export async function getArticleBySlug(slug) {
 }
 
 //Upload d'un fichier Markdown pour créer un article
-export async function uploadMarkdown(markdownfile) {
-    const formData = new FormData();
-    formData.append('file', markdownfile);
+export async function uploadMarkdown(formData) {
     const response = await axiosInstance.post("/articles/upload", formData, {
         headers: {
             "Content-Type": "multipart/form-data",

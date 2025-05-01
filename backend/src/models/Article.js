@@ -19,6 +19,22 @@ const ArticleSchema = new mongoose.Schema({
       type: String,
       required: [true, 'Le contenu Markdown est obligatoire.'],
     },
+    coverPhoto: {
+        type: String,
+        default: null,
+        validate: {
+          validator: function(v) {
+            // Accepte null/undefined ou URL (http/https) ou chemins relatifs locaux
+            return v == null || /^https?:\/\/.+$/.test(v) || /^\/uploads\/.+$/.test(v);
+          },
+          message: props => `${props.value} n'est pas une URL valide.`,
+        },
+      },
+      storageMode: { 
+        type: String, 
+        enum: ['aws', 'cloudinary', 'local'], 
+        required: true 
+    },
   }, {
     timestamps: true,
     versionKey: false,
