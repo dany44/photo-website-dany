@@ -9,12 +9,12 @@ Bienvenue sur le dépôt de mon site personnel. Il s’agit d’un projet **full
 ### 📷 Portfolio
 - **Albums dynamiques** avec couverture, description et galerie intégrée
 - **Upload d’images** avec titre, description et attribution à un album
-- **Galerie publique** avec vue masonry ou slider (selon le rôle)
+- **Galerie publique** avec vue masonry ou slider
 
 ### ✍️ Blog
 - Support des **articles Markdown** uploadés via interface
 - Ajout optionnel d’une **image de couverture**
-- **Rendu enrichi** (code, tableaux, images, blockquotes…) grâce à `react-markdown`
+- **Rendu enrichi** (tableaux, images, blockquotes…) grâce à `react-markdown`
 
 ### 🔐 Authentification
 - Connexion sécurisée par **JWT**
