@@ -26,11 +26,11 @@ function Arrow({ className, style, onClick, position }) {
 
 const albumArrowPos = {
   next: { right: '20px', top: '50%', transform: 'translateY(-50%)' },
-  prev: { left: '20px',  top: '50%', transform: 'translateY(-50%)', zIndex: 1 },
+  prev: { left: '20px', top: '50%', transform: 'translateY(-50%)', zIndex: 1 },
 };
 const articleArrowPos = {
-  next: { right: '-20px', top: '60%', transform: 'translateY(-60%)', fontSize: '2rem' },
-  prev: { left: '-20px',  top: '60%', transform: 'translateY(-60%)', fontSize: '2rem', zIndex: 1 },
+  next: { right: '-10px', top: '60%', transform: 'translateY(-60%)', fontSize: '2rem' },
+  prev: { left: '-10px', top: '60%', transform: 'translateY(-60%)', fontSize: '2rem', zIndex: 1 },
 };
 
 export default function HomePage() {
@@ -63,35 +63,19 @@ export default function HomePage() {
     prevArrow: <Arrow position={albumArrowPos.prev} />,
   };
 
-  // Articles carousel settings (5 recent)
   const recent = Array.isArray(articles) ? articles.slice(0, 5) : [];
+
+  // Articles carousel settings (5 recent)
   const articleSliderSettings = {
     dots: false,
-    infinite: false,              // plus de loop
+    infinite: false,
     speed: 400,
-    slidesToShow: 3,              // toujours 3 sur grand écran
+    slidesToShow: 1,        // ← Un article à la fois
     slidesToScroll: 1,
     arrows: true,
     nextArrow: <Arrow position={articleArrowPos.next} />,
     prevArrow: <Arrow position={articleArrowPos.prev} />,
-    responsive: [
-      {
-        breakpoint: 1024,
-        settings: {
-          slidesToShow: 2,        // 2 sur tablettes
-          slidesToScroll: 1
-        }
-      },
-      {
-        breakpoint: 600,
-        settings: {
-          slidesToShow: 1,        // 1 sur mobile
-          slidesToScroll: 1
-        }
-      }
-    ]
   };
-
 
   return (
     <div className="bg-gray-900 min-h-screen pb-8 relative font-sans text-gray-100">
@@ -184,49 +168,51 @@ export default function HomePage() {
 
       {/* Section Derniers Articles */}
       <section className="bg-gray-800 text-white py-16 px-4 mt-12 shadow-inner">
-        <h2 className="text-3xl font-bold mb-6 text-center tracking-tight text-white">Derniers Articles</h2>
+        <h2 className="text-3xl font-bold mb-6 text-center">Derniers Articles</h2>
+
         {recent.length === 0 ? (
-          <section className="bg-gray-800 text-white py-16 px-4 shadow-inner">
-            <div className="max-w-6xl mx-auto text-center">
-              <p className="text-lg leading-relaxed">Aucun article publié pour le moment. Revenez plus tard !</p>
-            </div>
-          </section>
+          <div className="max-w-6xl mx-auto text-center py-16">
+            <p className="text-lg leading-relaxed">Aucun article publié pour le moment. Revenez plus tard !</p>
+          </div>
         ) : (
-          <div className="px-4">
+          <div className="relative">
             <Slider {...articleSliderSettings}>
-              {recent.map(({ slug, title, createdAt, markdownContent, coverPhoto }) => (
-                <div key={slug} className="px-2">
-                  <div className="bg-gray-800 rounded-lg overflow-hidden shadow-lg w-full max-w-md mx-auto">
-                    {/* image ou placeholder */}
-                    {coverPhoto ? (
-                      <img
-                        src={coverPhoto}
-                        alt={title}
-                        className="h-40 w-full object-cover"
-                      />
-                    ) : (
-                      <div className="h-40 w-full bg-gray-700 flex items-center justify-center">
-                        <span className="text-gray-400">Visuel à venir</span>
+              {recent.map(({ slug, title, createdAt, updatedAt, markdownContent, coverPhoto }) => {
+                // Extrait et date
+                const excerpt = (markdownContent ?? '').slice(0, 120) + '…';
+                const dateToShow = updatedAt && updatedAt !== createdAt
+                  ? new Date(updatedAt).toLocaleDateString()
+                  : new Date(createdAt).toLocaleDateString();
+
+                return (
+                  <div key={slug} className="px-4">
+                    <div className="relative w-full overflow-hidden rounded-lg shadow-lg">
+                      {/* Cover pleine largeur, hauteur fixe */}
+                      {coverPhoto ? (
+                        <img
+                          src={coverPhoto}
+                          alt={title}
+                          className="w-full h-[50vh] object-cover"
+                        />
+                      ) : (
+                        <div className="w-full h-[50vh] bg-gray-700 flex items-center justify-center">
+                          <span className="text-gray-400">Visuel à venir</span>
+                        </div>
+                      )}
+                      {/* Overlay texte centré */}
+                      <div className="absolute inset-0 bg-black bg-opacity-50 flex flex-col items-center justify-center text-center px-6">
+                        <h3 className="text-3xl md:text-4xl font-extrabold text-white mb-4">{title}</h3>
+                        <p className="text-gray-400 text-sm mb-2">{dateToShow}</p>
+                        <p className="text-gray-200 mb-6 max-w-2xl">{excerpt}</p>
+                        <Link to={`/articles/${slug}`} className="button-primary">
+                          Lire l’article →
+                        </Link>
                       </div>
-                    )}
-                    {/* contenu */}
-                    <div className="p-4 bg-gray-900">
-                      <h3 className="text-xl font-semibold text-white mb-1">{title}</h3>
-                      <p className="text-gray-400 text-sm mb-2">
-                        {new Date(createdAt).toLocaleDateString()}
-                      </p>
-                      <p className="text-gray-300 text-sm mb-4">
-                        {(markdownContent ?? '').slice(0, 100)}…
-                      </p>
-                      <Link to={`/articles/${slug}`} className="inline-block text-indigo-400 hover:underline">
-                        Lire la suite →
-                      </Link>
                     </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </Slider>
-
           </div>
         )}
       </section>
