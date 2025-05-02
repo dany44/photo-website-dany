@@ -1,4 +1,8 @@
-// src/controllers/contactController.js
+/**
+ * @file contactController.js
+ * @description Contrôleur de la route de contact : validation et envoi d’un email via Nodemailer.
+ */
+
 const nodemailer = require('nodemailer'); // Importer Nodemailer
 const config = require('../config/Config'); // Pour les logs et configurations globales
 

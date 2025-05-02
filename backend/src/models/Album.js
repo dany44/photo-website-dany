@@ -1,4 +1,8 @@
-// models/Album.js
+/**
+ * @file Album.js
+ * @description Modèle Mongoose pour les albums photo, avec validation des champs et référence aux photos associées.
+ */
+
 const mongoose = require('mongoose');
 
 // Définition du schéma pour les albums

@@ -1,4 +1,7 @@
-// src/components/forms/ManageAlbums.jsx
+/**
+ * @file ManageAlbums.jsx
+ * @description Interface d’administration pour gérer les albums : création, modification et suppression.
+ */
 import React, { useState } from 'react';
 import { useAlbums } from '../../hooks/useAlbums'; // On importe le hook personnalisé
 import '../../styles/styles.css';

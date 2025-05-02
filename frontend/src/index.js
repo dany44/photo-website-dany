@@ -1,4 +1,7 @@
-// src/index.js
+/**
+ * @file index.js
+ * @description Point d’entrée de l’application React : initialisation du routing, du contexte et de React Query.
+ */
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';

@@ -1,107 +1,154 @@
-# 📸 Photo Gallery - Projet Full Stack  
+# 📸 Mon site photo — Albums & Blog
 
-**Photo Gallery** est une application complète de gestion et d'affichage d'albums photos, conçue pour exposer mes clichés de voyage de manière simple et authentique. Ce projet Full Stack intègre un **backend en Node.js/Express** et un **frontend en React**, déployé sur **Railway (backend)** et **Netlify (frontend)**, avec **MongoDB Atlas** pour la base de données.  
-
-> **Note :** L'utilisation de solutions de stockage comme **Cloudinary** ou **AWS S3** est optionnelle (configurable via la variable `STORAGE_MODE`). Des **liens signés** sont générés (pour AWS) afin de faciliter une transition si nécessaire.  
+Bienvenue sur le dépôt de mon site personnel. Il s’agit d’un projet **fullstack (Node.js + React)** qui me permet de **partager mes photos** via des **albums organisés** et de publier des **articles**. J’y présente mes randonnées, mes voyages et mon regard photographique.
 
 ---
 
-## 📑 Table des Matières  
-1. [Introduction 👋](#-introduction-)  
-2. [Fonctionnalités 🚀](#-fonctionnalités-)  
-3. [Technologies Utilisées 💻](#-technologies-utilisées-)  
-4. [📌 Architecture du Projet](#-architecture-du-projet-)  
+# 🚀 Fonctionnalités principales
+
+### 📷 Portfolio
+- **Albums dynamiques** avec couverture, description et galerie intégrée
+- **Upload d’images** avec titre, description et attribution à un album
+- **Galerie publique** avec vue masonry ou slider
+
+### ✍️ Blog
+- Support des **articles Markdown** uploadés via interface
+- Ajout optionnel d’une **image de couverture**
+- **Rendu enrichi** (tableaux, images, blockquotes…) grâce à `react-markdown`
+
+### 🔐 Authentification
+- Connexion sécurisée par **JWT**
+- Interface conditionnelle selon rôle (public / admin)
+- Redirection automatique vers /login si session expirée
+
+### 🛠️ Admin complet
+- Upload / suppression de photos
+- Création / édition / suppression d’albums
+- Gestion des articles markdown
 
 ---
 
-## 👋 Introduction  
-**Photo Gallery** est une application **Full Stack** qui me permet de gérer et d'afficher mes albums photos. J'ai conçu ce projet pour :  
-✅ Présenter mes photos de voyage.  
-✅ Disposer d'un **espace administrateur sécurisé** pour gérer le contenu.  
+# 🧠 Stack technique
+
+### Backend (Node.js v22.12.0)
+- Express.js + MongoDB (Mongoose)
+- Authentification JWT (stockée en HTTP-only cookie)
+- Sécurité : Helmet, CORS dynamique, mongo-sanitize
+- Logger : Winston avec timestamp & niveau
+- Markdown parsing pour les articles
+- Uploads supportés : Local, AWS S3, ou Cloudinary
+- Structure MVC (controllers, middlewares, validations, modèles)
+
+### Frontend (React)
+- React + React Router DOM
+- React Query + cache local persisté (avec localStorage)
+- React Markdown (blog), React Slick (carrousel), Framer Motion
+- Architecture modulaire : pages / composants / hooks
+- `AuthContext` pour la gestion centralisée de l’état auth
+- Interface responsive, dark mode par défaut
+
+### CI & Environnement
+- Variable `STORAGE_MODE` (local / s3 / cloudinary)
+- Variables .env côté serveur et côté client
+- CORS dynamique en fonction de `FRONTEND_URL`
 
 ---
 
-## 🚀 Fonctionnalités  
-
-### 📂 Backend (API REST)  
-- **Gestion des albums** : Création, modification, suppression et association de photos.  
-- **Gestion des photos** : Upload, suppression, mise à jour et génération de liens sécurisés.  
-- **Authentification sécurisée** : JWT & cookies pour l'accès aux routes protégées.  
-- **Stockage flexible** : Local, AWS S3 ou Cloudinary (via `STORAGE_MODE`).  
-- **Logs centralisés** : Winston avec rotation quotidienne pour un suivi fiable.  
-
-### 🎨 Frontend (React)  
-- **Galerie dynamique** : Mode **masonry** et **carrousel**.  
-- **Upload de photos** : Interface intuitive.  
-- **Espace admin** : Connexion sécurisée, gestion des albums et photos.  
-- **Responsive & Dark Mode** : UI moderne avec Tailwind CSS.  
-- **Gestion d'état** : React Context & React Query (cache persistant).  
-
----
-
-## 💻 Technologies Utilisées  
-
-### 🖥️ Backend  
-- **Node.js + Express.js**  
-- **MongoDB Atlas (Mongoose)**  
-- **JWT + Cookies** (authentification)  
-- **Cloudinary / AWS S3** (upload & stockage d'images)  
-- **Winston + Daily Rotate File** (logs)  
-- **Multer** (upload fichiers)  
-- **Sécurité** : Helmet, express-mongo-sanitize, Rate Limiting  
-
-### 🌐 Frontend  
-- **React + React Router**  
-- **Axios** (requêtes API)  
-- **Tailwind CSS** (UI)  
-- **React Context & React Query** (@tanstack/react-query-persist-client)  
-
----
-
-## 📌 Architecture du Projet  
+# 🌍 Exemple de `.env` côté backend
 
 ```
-photo-gallery/
-├── backend/                  # API Node.js (Express, MongoDB Atlas)
-│   ├── src/
-│   │   ├── config/           # Configuration, logs & variables d'environnement
-│   │   ├── controllers/      # Logique métier (albums, photos, auth)
-│   │   ├── middlewares/      # Auth, validation, rate limiting, etc.
-│   │   ├── models/           # Schémas de données (Album, Photo)
-│   │   ├── routes/           # Endpoints de l'API
-│   │   ├── uploads/          # Stockage local des images (si utilisé)
-│   │   ├── app.js            # Point d'entrée Express
-│   │   └── server.js         # Démarrage du serveur HTTP
-│   ├── .env.example          # Exemple de config
-│   ├── package.json          # Dépendances backend
-│   ├── Dockerfile            # Conteneurisation backend
-│   ├── tests/                # Tests unitaires & intégration
-│   ├── logs/                 # Fichiers de logs rotatifs
-│
-├── frontend/                 # Interface React
-│   ├── src/
-│   │   ├── api/              # Appels API (auth, albums, photos)
-│   │   ├── components/       # Composants réutilisables
-│   │   ├── context/          # Gestion d'état global (AuthContext)
-│   │   ├── hooks/            # Hooks personnalisés
-│   │   ├── pages/            # Pages principales (Home, Admin, About, Login)
-│   │   ├── routes/           # React Router
-│   │   ├── App.jsx           # Point d'entrée React
-│   │   ├── index.js          # Initialisation & persistance cache
-│   │   ├── index.css         # Styles globaux
-│   ├── .env.example          # Exemple de config frontend
-│   ├── package.json          # Dépendances frontend
-│   ├── Dockerfile            # Conteneurisation frontend
-│   ├── public/               # Assets statiques
-│   ├── README.md             # Documentation frontend
-│   ├── vite.config.js        # Config Vite.js
-│
-├── .github/workflows/        # Pipelines CI/CD
-│   ├── backend-ci.yml        # CI/CD backend
-│   ├── frontend-ci.yml       # CI/CD frontend
-│   └── deploy.yml            # Déploiement Railway & Netlify
-│
-├── .gitignore                # Ignore fichiers sensibles (.env, logs, etc.)
-├── README.md                 # Documentation globale
-└── package.json              # Dépendances globales (si monorepo)
+NODE_ENV=development
+PORT=3000
+LOG_LEVEL=info
+MONGO_URI=...
+JWT_SECRET=...
+FRONTEND_URL=http://localhost:3001
+
+STORAGE_MODE=local
+
+# AWS
+AWS_ACCESS_KEY_ID=...
+AWS_SECRET_ACCESS_KEY=...
+AWS_REGION=eu-north-1
+AWS_BUCKET_NAME=...
+
+# Cloudinary
+CLOUDINARY_CLOUD_NAME=...
+CLOUDINARY_API_KEY=...
+CLOUDINARY_API_SECRET=...
+
+# Admin
+ADMIN_HASHED_PASSWORD=...
+
+# Contact (email)
+GMAIL_USER=...
+GMAIL_PASSWORD=...
 ```
+
+# 🌍 Exemple de `.env` côté frontend
+
+```
+REACT_APP_API_URL=...
+
+```
+
+---
+
+# 📁 Architecture simplifiée
+
+```
+backend/
+  ├── config/              # Initialisation Mongo, S3, Cloudinary, Winston
+  ├── controllers/         # Logique métier (photos, albums, articles…)
+  ├── middlewares/         # Auth, error, logger, CORS
+  ├── models/              # Mongoose schemas
+  ├── routes/              # Routes express
+  ├── services/            # Abstractions Cloudinary / S3 / Local
+  └── utils/               # Markdown, date, regex…
+
+frontend/
+  ├── components/          # Forms, gallery, admin, layout
+  ├── context/             # Auth context (JWT)
+  ├── hooks/               # React Query (photos, albums, articles…)
+  ├── pages/               # Home, Album, Blog, Admin, Contact, About
+  └── styles/              # Tailwind + custom CSS
+```
+
+---
+
+# ✅ Améliorations prévues
+
+- Ajout d’un système de **tags** pour les photos
+- **Recherche** ou filtrage par lieux / sujets
+- Section “carnet de voyage” avec cartes interactives (Leaflet)
+- Internationalisation (FR / EN)
+- Tests unitaires avec Jest côté front et back
+
+---
+
+# ✅ Lancement local
+
+### Prérequis :
+- Node.js >= 18 (utilisé : 22.12.0)
+- MongoDB Atlas ou local
+- Créer un `.env` côté backend
+
+### Lancer le backend
+```bash
+cd backend
+npm install
+npm start
+```
+
+### Lancer le frontend
+```bash
+cd frontend
+npm install
+npm start
+```
+
+---
+
+# ✒️ À propos
+
+Développé par [Dany Khadhar](https://danykhadhar.fr)

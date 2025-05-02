@@ -1,4 +1,7 @@
-// src/components/forms/AddPhotoForm.jsx
+/**
+ * @file AddPhotoForm.jsx
+ * @description Formulaire d’ajout de photo avec titre, description, image et sélection d’album.
+ */
 import React, { useState, useEffect } from 'react';
 import { uploadPhoto } from '../../api/photos';
 import { useAlbums } from '../../hooks/useAlbums';

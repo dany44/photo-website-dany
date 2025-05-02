@@ -1,4 +1,7 @@
-// controllers/albumController.js
+/**
+ * @file albumController.js
+ * @description Contrôleur des albums photo : création, lecture, mise à jour, suppression, gestion de cover photo, et association de photos aux albums.
+ */
 
 const Album = require('../models/Album');
 const Photo = require('../models/Photo');

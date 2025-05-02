@@ -1,4 +1,8 @@
-// src/api/albums.js
+/**
+ * @file albums.js
+ * @description Fonctions API pour gérer les albums : CRUD, ajout et déplacement de photos.
+ */
+
 import axiosInstance from './axiosInstance';
 
 // Récupère tous les albums

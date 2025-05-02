@@ -1,3 +1,8 @@
+/**
+ * @file App.jsx
+ * @description Composant racine de l’application avec sidebar responsive, layout principal et routes.
+ */
+
 import React, { useState } from "react";
 import Sidebar from "./components/layout/Sidebar";
 import AppRoutes from "./routes/AppRoutes";

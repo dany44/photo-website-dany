@@ -1,4 +1,7 @@
-// src/hooks/useAlbums.js
+/**
+ * @file useAlbums.js
+ * @description Hook React Query pour gérer la récupération, la création, la mise à jour et la suppression d’albums.
+ */
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   getAllAlbums,

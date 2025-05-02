@@ -1,4 +1,8 @@
-// src/api/contact.js
+/**
+ * @file contact.js
+ * @description Envoi des messages du formulaire de contact vers l’API backend.
+ */
+
 import axiosInstance from './axiosInstance';
 
 // Envoie le message de contact

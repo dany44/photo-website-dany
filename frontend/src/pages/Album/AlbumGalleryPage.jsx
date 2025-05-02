@@ -1,4 +1,7 @@
-// src/pages/Album/AlbumGalleryPage.jsx
+/**
+ * @file AlbumGalleryPage.jsx
+ * @description Affiche la galerie d’un album spécifique selon son ID dans l’URL.
+ */
 import React from 'react';
 import { useParams } from 'react-router-dom';
 import PhotoGallery from '../../components/gallery/PhotoGallery';

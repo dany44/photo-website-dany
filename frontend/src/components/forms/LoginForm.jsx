@@ -1,3 +1,8 @@
+/**
+ * @file LoginForm.jsx
+ * @description Formulaire de connexion pour les administrateurs avec validation côté client.
+ */
+
 import React, { useState } from 'react';
 
 function LoginForm({ onSubmit, error }) {

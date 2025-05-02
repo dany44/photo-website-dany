@@ -1,4 +1,8 @@
-// src/middlewares/validateContact.js
+/**
+ * @file validateContact.js
+ * @description Middleware de validation des données du formulaire de contact (nom, email, message), avec messages d’erreur personnalisés.
+ */
+
 const Joi = require('joi');
 
 // Schéma de validation pour le formulaire de contact

@@ -1,4 +1,7 @@
-// src/pages/About/AboutPage.jsx
+/**
+ * @file AboutPage.jsx
+ * @description Page de présentation personnelle avec description et matériel utilisé.
+ */
 import React from 'react';
 
 const AboutPage = () => {

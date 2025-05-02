@@ -1,3 +1,9 @@
+/**
+ * @file photoController.js
+ * @description Contrôleur des photos : upload, lecture, mise à jour, suppression, connexion/admin avec JWT, et génération d’URLs sécurisées (S3 / Cloudinary / local).
+ */
+
+
 const { PutObjectCommand, DeleteObjectCommand, GetObjectCommand } = require('@aws-sdk/client-s3');
 const { getSignedUrl } = require('@aws-sdk/s3-request-presigner');
 const Photo = require('../models/Photo');

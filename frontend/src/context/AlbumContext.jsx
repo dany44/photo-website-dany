@@ -1,4 +1,7 @@
-// src/context/AlbumContext.jsx
+/**
+ * @file AuthContext.jsx
+ * @description Fournit un contexte d’authentification global : état de session, login, logout, vérification initiale.
+ */
 import React, { createContext, useState, useEffect } from 'react';
 import {
   getAllAlbums,
