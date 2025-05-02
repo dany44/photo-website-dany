@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@tailwindcss/typography": "^0.5.16",
     "@tanstack/query-sync-storage-persister": "^5.69.0",
     "@tanstack/react-query": "^5.69.0",
     "@tanstack/react-query-persist-client": "^5.69.0",
@@ -19,6 +20,8 @@
     "react-router-dom": "^7.1.1",
     "react-scripts": "^5.0.1",
     "react-slick": "^0.30.3",
+    "rehype-raw": "^7.0.0",
+    "remark-gfm": "^4.0.1",
     "slick-carousel": "^1.8.1",
     "swiper": "^11.2.6",
     "web-vitals": "^4.2.4"

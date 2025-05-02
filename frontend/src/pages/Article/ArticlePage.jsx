@@ -3,6 +3,8 @@ import React from 'react';
 import { useParams } from 'react-router-dom';
 import { useArticles } from '../../hooks/useArticles';
 import ReactMarkdown from 'react-markdown';
+import rehypeRaw from 'rehype-raw';
+import remarkGfm from 'remark-gfm';
 
 function ArticlePage() {
   const { slug } = useParams();
@@ -52,6 +54,9 @@ function ArticlePage() {
       {/* Content with enhanced markdown styling */}
       <article className="prose prose-indigo prose-invert prose-lg max-w-none space-y-8">
         <ReactMarkdown
+          remarkPlugins={[remarkGfm]}    // ← support des images Markdown, tableaux, etc.
+          rehypePlugins={[rehypeRaw]}
+          skipHtml={false}              
           components={{
             blockquote: ({ node, ...props }) => (
               <blockquote className="border-l-4 border-indigo-500 pl-4 italic text-gray-300" {...props} />
@@ -70,6 +75,23 @@ function ArticlePage() {
                 </pre>
               )
             ),
+           // src/pages/Article/ArticlePage.jsx
+// …dans ton <ReactMarkdown components={{…}}>
+img: ({ node, ...props }) => (
+    <div className="w-full mb-6 overflow-hidden rounded-lg shadow-lg aspect-video">
+<img
+      {...props}
+      className="
+        w-full h-full
+        object-cover       /* garde le cover */
+        object-center      /* recadrage vers le bas */
+      "
+      alt={props.alt || ''}
+    />
+   </div>
+ ),
+  
+              
             h2: ({ node, ...props }) => (
               <h2 className="text-3xl font-bold text-indigo-200 mt-8 mb-4" {...props} />
             ),
