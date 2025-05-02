@@ -1,3 +1,8 @@
+/**
+ * @file articleRoutes.js
+ * @description Définition des routes publiques et sécurisées liées aux articles markdown (upload, suppression, récupération).
+ */
+
 const express = require('express');
 const { apiLimiter } = require('../middlewares/apiLimiter'); // Import du middleware rate limit
 const { authenticate, authorize } = require('../middlewares/authMiddleware');

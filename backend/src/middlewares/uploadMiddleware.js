@@ -1,5 +1,10 @@
+/**
+ * @file uploadMiddleware.js
+ * @description Middlewares de gestion des fichiers (images et Markdown) via Multer : stockage en mémoire, filtres MIME, et gestion des erreurs d’upload.
+ */
+
 const multer = require('multer');
-const config = require('../config/Config'); // Pour les logs
+const config = require('../config/Config'); 
 
 // Stockage en mémoire commun
 const storage = multer.memoryStorage();

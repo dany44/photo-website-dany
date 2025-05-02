@@ -1,3 +1,8 @@
+/**
+ * @file Photo.js
+ * @description Modèle Mongoose pour les photos, avec titre, description, chemin image, identifiant Cloudinary et mode de stockage.
+ */
+
 const mongoose = require('mongoose');
 
 // Définition du schéma pour les photos

@@ -1,4 +1,7 @@
-// src/components/layout/Footer.jsx
+/**
+ * @file Footer.jsx
+ * @description Pied de page du site avec droits d’auteur et lien vers la page de contact.
+ */
 import React from 'react';
 import { NavLink } from "react-router-dom";
 

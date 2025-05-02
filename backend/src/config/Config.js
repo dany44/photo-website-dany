@@ -1,4 +1,8 @@
-// config/Config.js
+/**
+ * @file Config.js
+ * @description Configuration centralisée de l’application : chargement des variables, initialisation de MongoDB, S3, Cloudinary, JWT et Winston logger.
+ */
+
 const fs = require('fs');
 const winston = require('winston');
 require('winston-daily-rotate-file'); 

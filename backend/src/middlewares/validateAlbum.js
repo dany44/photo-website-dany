@@ -1,4 +1,8 @@
-// middlewares/validateAlbum.js
+/**
+ * @file validateAlbum.js
+ * @description Middleware de validation de la structure des données envoyées lors de la création ou mise à jour d’un album, avec Joi.
+ */
+
 const Joi = require('joi');
 
 // Schéma de validation pour un album

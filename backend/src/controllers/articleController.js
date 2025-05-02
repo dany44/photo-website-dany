@@ -1,3 +1,9 @@
+/**
+ * @file articleController.js
+ * @description Contrôleur des articles : upload de fichiers Markdown, gestion des articles (CRUD), traitement de la cover photo.
+ */
+
+
 const Article = require('../models/Article');
 const config = require('../config/Config');
 const fs = require('fs');

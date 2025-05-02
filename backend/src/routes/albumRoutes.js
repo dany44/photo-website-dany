@@ -1,3 +1,8 @@
+/**
+ * @file albumRoutes.js
+ * @description Définition des routes liées aux albums photo : accès public et routes protégées pour la gestion CRUD et l'association de photos.
+ */
+
 const express = require('express');
 const { apiLimiter } = require('../middlewares/apiLimiter');
 const albumController = require('../controllers/albumController');

@@ -1,3 +1,8 @@
+/**
+ * @file photoRoutes.js
+ * @description Routes publiques et sécurisées pour la gestion des photos, connexion admin, upload, mise à jour et suppression.
+ */
+
 const express = require('express');
 const { apiLimiter } = require('../middlewares/apiLimiter'); // Import du middleware rate limit
 const { authenticate, authorize } = require('../middlewares/authMiddleware');

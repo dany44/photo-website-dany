@@ -1,4 +1,7 @@
-// src/hooks/useArticles.js
+/**
+ * @file useArticles.js
+ * @description Hook React Query pour gérer les articles de blog : récupération, upload, suppression.
+ */
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
     getAllArticles,

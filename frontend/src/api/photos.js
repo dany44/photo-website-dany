@@ -1,4 +1,8 @@
-// src/api/photos.js
+/**
+ * @file photos.js
+ * @description Fonctions API pour gérer les photos : upload, récupération paginée, suppression.
+ */
+
 import axiosInstance from './axiosInstance';
 
 // Récupère les photos avec pagination

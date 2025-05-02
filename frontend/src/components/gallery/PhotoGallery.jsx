@@ -1,3 +1,8 @@
+/**
+ * @file PhotoGallery.jsx
+ * @description Galerie de photos affichée en grid ou slider, avec vue modale et pagination selon le contexte.
+ */
+
 import React, { useState, useRef, useEffect } from 'react';
 import Slider from "react-slick";
 import { AuthContext } from '../../context/AuthContext';

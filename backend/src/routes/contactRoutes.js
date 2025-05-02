@@ -1,3 +1,8 @@
+/**
+ * @file contactRoutes.js
+ * @description Route publique de contact avec validation et protection contre l’abus via rate limiter.
+ */
+
 const express = require('express');
 const { sendContactEmail } = require('../controllers/contactController');
 const { contactRateLimiter } = require('../middlewares/apiLimiter');

@@ -1,4 +1,7 @@
-// src/routes/AppRoutes.jsx
+/**
+ * @file AppRoutes.jsx
+ * @description Définition des routes principales de l’application via React Router.
+ */
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 import HomePage from '../pages/Home/HomePage';

@@ -1,4 +1,7 @@
-// src/pages/Home/HomePage.jsx
+/**
+ * @file HomePage.jsx
+ * @description Page d’accueil avec carrousel d’albums, aperçu du portfolio, derniers articles et dernières photos.
+ */
 import React from 'react';
 import PhotoGallery from '../../components/gallery/PhotoGallery';
 import { NavLink, Link } from 'react-router-dom';

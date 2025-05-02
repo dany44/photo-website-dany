@@ -1,3 +1,9 @@
+/**
+ * @file Article.js
+ * @description Modèle Mongoose pour les articles markdown, avec gestion du slug, titre, contenu et cover photo.
+ */
+
+
 const mongoose = require('mongoose');
 
 const ArticleSchema = new mongoose.Schema({

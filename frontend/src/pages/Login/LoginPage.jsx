@@ -1,3 +1,8 @@
+/**
+ * @file LoginPage.jsx
+ * @description Page de connexion pour administrateurs, avec redirection automatique si déjà connecté.
+ */
+
 import React, { useState, useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../context/AuthContext';

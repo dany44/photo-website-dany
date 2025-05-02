@@ -1,3 +1,8 @@
+/**
+ * @file app.js
+ * @description Point d’entrée principal de l’application Express : initialisation des middlewares globaux, connexion DB, routage, sécurité et démarrage du serveur.
+ */
+
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');

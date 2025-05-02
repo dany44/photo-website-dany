@@ -1,4 +1,8 @@
-// src/api/axiosInstance.js
+/**
+ * @file axiosInstance.js
+ * @description Instance Axios configurée avec baseURL, gestion des cookies et redirection automatique sur erreur 401.
+ */
+
 import axios from 'axios';
 
 const axiosInstance = axios.create({

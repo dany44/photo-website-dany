@@ -1,4 +1,7 @@
-// src/pages/Article/ArticlePage.jsx
+/**
+ * @file ArticlePage.jsx
+ * @description Page de lecture d’un article au format Markdown avec mise en forme enrichie.
+ */
 import React from 'react';
 import { useParams } from 'react-router-dom';
 import { useArticles } from '../../hooks/useArticles';

@@ -1,3 +1,8 @@
+/**
+ * @file articles.js
+ * @description Fonctions API pour récupérer, uploader et supprimer des articles au format Markdown.
+ */
+
 import axiosInstance from "./axiosInstance";
 
 //Récupère tous les articles

@@ -1,3 +1,8 @@
+/**
+ * @file ContactPage.jsx
+ * @description Formulaire de contact avec validation, envoi de message et contact direct par email.
+ */
+
 import React, { useState } from "react";
 import { sendContactMessage } from "../../api/contact"; // Assurez-vous d'avoir cette fonction dans ton API
 

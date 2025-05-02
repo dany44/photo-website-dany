@@ -1,4 +1,7 @@
-// src/components/layout/Sidebar.jsx
+/**
+ * @file Sidebar.jsx
+ * @description Barre latérale de navigation responsive avec liens vers le portfolio, blog, contact et admin.
+ */
 import React, { useState } from "react";
 import { NavLink } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";

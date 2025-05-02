@@ -1,3 +1,8 @@
+/**
+ * @file ManageArticles.jsx
+ * @description Interface d’administration pour uploader ou supprimer des articles Markdown avec couverture.
+ */
+
 import React, { useState } from 'react';
 import { useArticles } from '../../hooks/useArticles';
 import '../../styles/styles.css';

@@ -1,4 +1,7 @@
-// src/hooks/usePhotos.js
+/**
+ * @file usePhotos.js
+ * @description Hook React Query pour gérer les photos avec pagination : récupération, upload, suppression.
+ */
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { getPhotos, deletePhoto, uploadPhoto } from '../api/photos';
 

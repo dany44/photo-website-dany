@@ -1,3 +1,8 @@
+/**
+ * @file AdminPage.jsx
+ * @description Tableau de bord admin avec onglets pour gérer les albums, photos, articles et galerie.
+ */
+
 import React, { useEffect, useContext, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../context/AuthContext';
