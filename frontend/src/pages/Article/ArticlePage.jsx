@@ -65,8 +65,21 @@ function ArticlePage() {
               <blockquote className="border-l-4 border-indigo-500 pl-4 italic text-gray-300" {...props} />
             ),
             a: ({ node, ...props }) => (
-              <a className="text-indigo-400 hover:underline" {...props} />
-            ),
+                <a className="text-indigo-400 hover:underline" {...props}>
+                  {props.children || props.href}
+                </a>
+              ),
+              h2: ({ node, ...props }) => (
+                <h2 className="text-3xl font-bold text-indigo-200 mt-8 mb-4" {...props}>
+                  {props.children || 'Titre'}
+                </h2>
+              ),
+              h3: ({ node, ...props }) => (
+                <h3 className="text-2xl font-semibold text-indigo-300 mt-6 mb-3" {...props}>
+                  {props.children || 'Sous-titre'}
+                </h3>
+              ),
+              
             code: ({ node, inline, className, children, ...props }) => (
               inline ? (
                 <code className="bg-gray-800 px-1 py-0.5 rounded text-indigo-200" {...props}>
@@ -78,28 +91,18 @@ function ArticlePage() {
                 </pre>
               )
             ),
-           // src/pages/Article/ArticlePage.jsx
-// …dans ton <ReactMarkdown components={{…}}>
-img: ({ node, ...props }) => (
-    <div className="w-full mb-6 overflow-hidden rounded-lg shadow-lg aspect-video">
-<img
-      {...props}
-      className="
-        w-full h-full
-        object-cover       /* garde le cover */
-        object-center      /* recadrage vers le bas */
-      "
-      alt={props.alt || ''}
-    />
-   </div>
- ),
-  
-              
-            h2: ({ node, ...props }) => (
-              <h2 className="text-3xl font-bold text-indigo-200 mt-8 mb-4" {...props} />
-            ),
-            h3: ({ node, ...props }) => (
-              <h3 className="text-2xl font-semibold text-indigo-300 mt-6 mb-3" {...props} />
+            img: ({ node, ...props }) => (
+                <div className="w-full mb-6 overflow-hidden rounded-lg shadow-lg aspect-video">
+            <img
+                {...props}
+                className="
+                    w-full h-full
+                    object-cover       /* garde le cover */
+                    object-center      /* recadrage vers le bas */
+                "
+                alt={props.alt || ''}
+                />
+            </div>
             ),
             ul: ({ node, ...props }) => (
               <ul className="list-disc list-inside space-y-2 text-gray-300" {...props} />
